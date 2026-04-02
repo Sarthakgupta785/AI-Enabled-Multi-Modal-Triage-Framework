@@ -1,0 +1,36 @@
+{
+  "stats": {
+    "total_checks": 1000,
+    "total_overrides": 140,
+    "override_rate": 0.14
+  },
+  "test_cases_results": [
+    {
+      "case": "Healthy adult \u2014 routine visit",
+      "overridden": true
+    },
+    {
+      "case": "Chest pain + tachycardia \u2014 possible MI",
+      "overridden": true
+    },
+    {
+      "case": "Respiratory failure \u2014 critically low SpO2",
+      "overridden": true
+    },
+    {
+      "case": "Unconscious patient \u2014 immediate emergency",
+      "overridden": true
+    },
+    {
+      "case": "Infant with fever \u2014 pediatric concern",
+      "overridden": true
+    }
+  ],
+  "rules_count": {
+    "vital_rules": 12,
+    "critical_keywords": 12,
+    "high_danger_keywords": 20,
+    "warning_keywords": 16,
+    "combo_rules": 6
+  }
+}

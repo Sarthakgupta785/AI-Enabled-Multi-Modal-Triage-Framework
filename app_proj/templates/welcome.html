@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F2D4A">
+    <title>Triage AI</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',system-ui,sans-serif;background:#0F2D4A;min-height:100vh;display:flex;align-items:center;justify-content:center;color:#fff;overflow:hidden;position:relative}
+
+        /* Subtle grid pattern */
+        body::before{content:'';position:fixed;inset:0;background:
+            linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+            background-size:40px 40px;pointer-events:none;z-index:0}
+
+        /* Gradient orb */
+        body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%;
+            background:radial-gradient(circle,rgba(56,140,180,0.12) 0%,transparent 70%);
+            top:-200px;right:-200px;pointer-events:none;z-index:0}
+
+        .container{max-width:480px;width:90%;text-align:center;padding:20px;position:relative;z-index:1}
+
+        .logo-mark{width:72px;height:72px;margin:0 auto 28px;position:relative}
+        .logo-mark svg{width:72px;height:72px}
+
+        h1{font-size:32px;font-weight:700;margin-bottom:6px;letter-spacing:-0.75px;
+            background:linear-gradient(135deg,#fff 0%,#B8D4E8 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+        .subtitle{font-size:14px;color:#8AACCA;font-weight:400;margin-bottom:4px;letter-spacing:0.2px}
+        .tagline{font-size:12px;color:#5A7E9A;margin-bottom:32px;letter-spacing:0.3px}
+
+        .sdg-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;
+            border:1px solid rgba(56,140,180,0.25);border-radius:6px;font-size:11px;
+            color:#6BA3C2;margin-bottom:40px;letter-spacing:0.5px;font-weight:500;
+            background:rgba(56,140,180,0.06)}
+        .sdg-dot{width:6px;height:6px;border-radius:50%;background:#4CAF8A}
+
+        .card-grid{display:flex;flex-direction:column;gap:12px}
+
+        .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            border-radius:12px;padding:20px;text-decoration:none;color:#fff;
+            transition:all 0.25s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:16px;text-align:left;
+            backdrop-filter:blur(8px)}
+        .card:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.14);
+            transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+        .card:active{transform:scale(0.99)}
+
+        .card-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .card-icon.clinical{background:rgba(56,140,180,0.15);border:1px solid rgba(56,140,180,0.2)}
+        .card-icon.assistant{background:rgba(76,175,138,0.15);border:1px solid rgba(76,175,138,0.2)}
+        .card-icon svg{width:22px;height:22px}
+
+        .card-text h2{font-size:15px;font-weight:600;margin-bottom:3px;letter-spacing:-0.2px}
+        .card-text p{font-size:12.5px;color:#7A9DB8;line-height:1.45;font-weight:400}
+
+        .card-arrow{margin-left:auto;color:#5A7E9A;font-size:16px;transition:transform 0.2s}
+        .card:hover .card-arrow{transform:translateX(2px);color:#8AACCA}
+
+        .footer{margin-top:44px;line-height:1.7}
+        .footer-inst{font-size:11px;color:#4A6E88;letter-spacing:0.3px}
+        .footer-team{font-size:10px;color:#3A5A72;margin-top:4px;letter-spacing:0.2px}
+
+        /* Entry animation */
+        .container > *{opacity:0;transform:translateY(12px);animation:enter 0.5s ease forwards}
+        .container > *:nth-child(1){animation-delay:0.1s}
+        .container > *:nth-child(2){animation-delay:0.15s}
+        .container > *:nth-child(3){animation-delay:0.2s}
+        .container > *:nth-child(4){animation-delay:0.25s}
+        .container > *:nth-child(5){animation-delay:0.3s}
+        .container > *:nth-child(6){animation-delay:0.4s}
+        .container > *:nth-child(7){animation-delay:0.55s}
+        @keyframes enter{to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo-mark">
+        <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="64" height="64" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <rect x="30" y="18" width="12" height="36" rx="3" fill="#388CB4"/>
+            <rect x="18" y="30" width="36" height="12" rx="3" fill="#388CB4"/>
+            <rect x="30" y="18" width="12" height="36" rx="3" fill="url(#crossGrad)" opacity="0.3"/>
+            <rect x="18" y="30" width="36" height="12" rx="3" fill="url(#crossGrad)" opacity="0.3"/>
+            <defs>
+                <linearGradient id="crossGrad" x1="18" y1="18" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#fff" stop-opacity="0.6"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+    <h1>Triage AI</h1>
+    <p class="subtitle">AI-Enabled Multi-Modal Triage Framework</p>
+    <p class="tagline">Risk Prediction &amp; Urgency Assessment for Rural Clinics</p>
+    <div class="sdg-badge"><span class="sdg-dot"></span> SDG 3 &mdash; Good Health and Well-Being</div>
+    <div class="card-grid">
+        <a href="/dashboard" class="card">
+            <div class="card-icon clinical">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#388CB4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <div class="card-text">
+                <h2>Clinical Triage Dashboard</h2>
+                <p>For healthcare workers &mdash; enter vitals and symptoms for AI-powered risk assessment</p>
+            </div>
+            <span class="card-arrow">&rsaquo;</span>
+        </a>
+        <a href="/chatbot" class="card">
+            <div class="card-icon assistant">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4CAF8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+            </div>
+            <div class="card-text">
+                <h2>Village Health Assistant</h2>
+                <p>For patients &mdash; guided questions in English, Hindi, and Tamil with voice support</p>
+            </div>
+            <span class="card-arrow">&rsaquo;</span>
+        </a>
+    </div>
+    <div class="footer">
+        <div class="footer-inst">Department of Computing Technology<br>SRM Institute of Science and Technology, Kattankulathur</div>
+        <div class="footer-team">Sarthak Gupta &amp; Dhruv &nbsp;|&nbsp; Guide: Dr R. Madhura</div>
+    </div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered'));
+}
+</script>
+</body>
+</html>

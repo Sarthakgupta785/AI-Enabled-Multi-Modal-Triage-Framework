@@ -1,0 +1,326 @@
+{
+  "risk_level": {
+    "train_accuracy": 0.722125,
+    "val_accuracy": 0.716,
+    "test_accuracy": 0.731,
+    "train_f1": 0.737213382464084,
+    "val_f1": 0.7299705678268653,
+    "test_f1": 0.744926921655325,
+    "confusion_matrix": [
+      [
+        347,
+        108,
+        0,
+        0
+      ],
+      [
+        18,
+        126,
+        3,
+        0
+      ],
+      [
+        17,
+        36,
+        110,
+        7
+      ],
+      [
+        10,
+        11,
+        59,
+        148
+      ]
+    ],
+    "classification_report": {
+      "Low": {
+        "precision": 0.8852040816326531,
+        "recall": 0.7626373626373626,
+        "f1-score": 0.8193624557260921,
+        "support": 455.0
+      },
+      "Moderate": {
+        "precision": 0.4483985765124555,
+        "recall": 0.8571428571428571,
+        "f1-score": 0.5887850467289719,
+        "support": 147.0
+      },
+      "High": {
+        "precision": 0.6395348837209303,
+        "recall": 0.6470588235294118,
+        "f1-score": 0.6432748538011696,
+        "support": 170.0
+      },
+      "Critical": {
+        "precision": 0.9548387096774194,
+        "recall": 0.6491228070175439,
+        "f1-score": 0.7728459530026109,
+        "support": 228.0
+      },
+      "accuracy": 0.731,
+      "macro avg": {
+        "precision": 0.7319940628858645,
+        "recall": 0.7289904625817938,
+        "f1-score": 0.7060670773147111,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 0.795106603929198,
+        "recall": 0.731,
+        "f1-score": 0.744926921655325,
+        "support": 1000.0
+      }
+    }
+  },
+  "urgency": {
+    "train_accuracy": 0.68125,
+    "val_accuracy": 0.64,
+    "test_accuracy": 0.631,
+    "train_f1": 0.6910570758580822,
+    "val_f1": 0.6502143498260788,
+    "test_f1": 0.6426667222195794,
+    "confusion_matrix": [
+      [
+        267,
+        115,
+        5,
+        0
+      ],
+      [
+        71,
+        112,
+        13,
+        0
+      ],
+      [
+        17,
+        47,
+        70,
+        22
+      ],
+      [
+        10,
+        10,
+        59,
+        182
+      ]
+    ],
+    "classification_report": {
+      "Non-Urgent": {
+        "precision": 0.7315068493150685,
+        "recall": 0.689922480620155,
+        "f1-score": 0.7101063829787234,
+        "support": 387.0
+      },
+      "Semi-Urgent": {
+        "precision": 0.39436619718309857,
+        "recall": 0.5714285714285714,
+        "f1-score": 0.4666666666666667,
+        "support": 196.0
+      },
+      "Urgent": {
+        "precision": 0.47619047619047616,
+        "recall": 0.44871794871794873,
+        "f1-score": 0.46204620462046203,
+        "support": 156.0
+      },
+      "Emergency": {
+        "precision": 0.8921568627450981,
+        "recall": 0.6973180076628352,
+        "f1-score": 0.7827956989247312,
+        "support": 261.0
+      },
+      "accuracy": 0.631,
+      "macro avg": {
+        "precision": 0.6235550963584353,
+        "recall": 0.6018467521073776,
+        "f1-score": 0.6054037382976458,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 0.6675275807950037,
+        "recall": 0.631,
+        "f1-score": 0.6426667222195794,
+        "support": 1000.0
+      }
+    }
+  },
+  "disease_category": {
+    "train_accuracy": 1.0,
+    "val_accuracy": 1.0,
+    "test_accuracy": 1.0,
+    "train_f1": 1.0,
+    "val_f1": 1.0,
+    "test_f1": 1.0,
+    "confusion_matrix": [
+      [
+        127,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        120,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        109,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        150,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        67,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        108,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        22,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        212,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        85
+      ]
+    ],
+    "classification_report": {
+      "Cardiac": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 127.0
+      },
+      "Gastrointestinal": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 120.0
+      },
+      "General": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 109.0
+      },
+      "Infectious": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 150.0
+      },
+      "Metabolic": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 67.0
+      },
+      "Neurological": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 108.0
+      },
+      "Obstetric": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 22.0
+      },
+      "Respiratory": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 212.0
+      },
+      "Trauma": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 85.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      }
+    }
+  }
+}

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F2D4A">
+    <title>Diya - Health Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#F3F5F7;--bg2:#fff;--text:#1A2332;--text2:#4A5D73;--text3:#8696A7;--border:#DEE3EA;--primary:#0F2D4A;--primary2:#1A4A6E;--accent:#388CB4;--accent-bg:#EBF4FA;--card-shadow:0 1px 3px rgba(15,45,74,0.05);--diya:#388CB4}
+        [data-theme="dark"]{--bg:#0D1B2A;--bg2:#162233;--text:#D4DEE8;--text2:#8696A7;--text3:#5A6E82;--border:#253545;--card-shadow:0 1px 3px rgba(0,0,0,0.2)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background 0.3s,color 0.3s}
+
+        .header{background:var(--primary);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.12)}
+        .back-btn{color:#fff;text-decoration:none;font-size:20px;padding:4px 8px;opacity:0.6;transition:opacity 0.15s}
+        .back-btn:hover{opacity:1}
+        .header-center{flex:1}
+        .header-center h1{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;letter-spacing:-0.2px}
+        .header-center h1 .logo-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+        .header-center p{font-size:11px;opacity:0.5;letter-spacing:0.2px;font-weight:400}
+        .icon-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+        .icon-btn:hover{background:rgba(255,255,255,0.14)}
+
+        .lang-bar{display:flex;justify-content:center;gap:6px;padding:10px;background:var(--bg2);border-bottom:1px solid var(--border)}
+        .lang-btn{padding:6px 16px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text2);transition:all 0.15s;font-family:inherit}
+        .lang-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .lang-btn:hover:not(.active){border-color:var(--accent)}
+
+        .chat-area{flex:1;overflow-y:auto;padding:16px;max-width:600px;width:100%;margin:0 auto;padding-bottom:80px}
+        .msg{margin-bottom:14px;display:flex;gap:8px;animation:fadeIn 0.3s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .msg.bot{justify-content:flex-start}
+        .msg.user{justify-content:flex-end}
+        .avatar{width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:4px}
+        .bot .avatar{background:var(--accent-bg);border:1px solid rgba(56,140,180,0.15)}
+        .bubble{max-width:82%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.55;position:relative}
+        .bot .bubble{background:var(--bg2);color:var(--text);border-bottom-left-radius:4px;box-shadow:var(--card-shadow);border:1px solid rgba(0,0,0,0.04)}
+        .user .bubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+        .speak-btn{position:absolute;top:6px;right:6px;background:none;border:none;cursor:pointer;font-size:12px;opacity:0.25;padding:4px;border-radius:4px;color:var(--text3)}
+        .speak-btn:hover{opacity:0.7}
+        .msg-time{font-size:9.5px;color:var(--text3);margin-top:3px;padding:0 40px;letter-spacing:0.2px}
+        .msg.user .msg-time{text-align:right;padding-right:0}
+
+        .options{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+        .opt-btn{padding:9px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);font-size:13px;cursor:pointer;transition:all 0.15s;color:var(--text);font-weight:500;display:flex;align-items:center;gap:6px;font-family:inherit}
+        .opt-btn:active{transform:scale(0.97)}
+        .opt-btn:hover{border-color:var(--accent);background:var(--accent-bg)}
+        .opt-btn.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .opt-btn .emoji{font-size:16px}
+        .opt-btn.warn{border-color:#D4A843;background:#FDF6E7}
+        [data-theme="dark"] .opt-btn.warn{background:#2A2008;border-color:#6B4E0A}
+
+        .input-area{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;gap:6px;max-width:600px;margin:0 auto;z-index:50;align-items:center}
+        .input-area input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--bg);color:var(--text);font-family:inherit}
+        .input-area input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(56,140,180,0.08)}
+        .circle-btn{width:38px;height:38px;border-radius:8px;border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+        .circle-btn:active{transform:scale(0.93)}
+        .send-btn{background:var(--primary)}
+        .send-btn:hover{background:var(--primary2)}
+        .mode-btn{background:none;border:1px solid var(--border);color:var(--text2);font-size:11px;width:auto;padding:7px 12px;border-radius:6px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.2px}
+        .mode-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--primary)}
+
+        .typing-wrap{display:flex;gap:8px;margin-bottom:14px}
+        .typing-bubble{background:var(--bg2);border-radius:12px;border-bottom-left-radius:4px;padding:14px 18px;box-shadow:var(--card-shadow);display:flex;gap:5px;border:1px solid rgba(0,0,0,0.04)}
+        .typing-dot{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:bounce 1.4s infinite}
+        .typing-dot:nth-child(2){animation-delay:0.15s}
+        .typing-dot:nth-child(3){animation-delay:0.3s}
+        @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+        .result-card{background:var(--bg2);border-radius:12px;padding:20px;margin:4px 0;box-shadow:0 2px 8px rgba(15,45,74,0.06);border:1px solid rgba(0,0,0,0.04)}
+        .result-badge{display:inline-block;padding:9px 22px;border-radius:6px;color:#fff;font-weight:700;font-size:15px;margin:4px 4px;letter-spacing:-0.2px}
+        .result-section{margin:10px 0;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+        .result-section h3{font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;letter-spacing:0.6px;font-weight:600}
+        .result-section p{font-size:14px;font-weight:600;color:var(--text)}
+
+        .advice-box{border-radius:8px;padding:14px;margin:10px 0;font-size:13px;line-height:1.6}
+        .advice-action{background:#FDF6E7;border-left:3px solid #D4A843;color:#6B4E0A}
+        .advice-do{background:#F0F7F3;border-left:3px solid #3D9E6E;color:#1A5C3A}
+        .advice-dont{background:#FDF2F2;border-left:3px solid #B91C1C;color:#7F1D1D}
+        .advice-watch{background:var(--accent-bg);border-left:3px solid var(--accent);color:#0F2D4A}
+        .advice-preg{background:#F6F0FA;border-left:3px solid #7C3AED;color:#4C1D95}
+        [data-theme="dark"] .advice-action{background:#2A2008;color:#D4A843}
+        [data-theme="dark"] .advice-do{background:#0A2018;color:#6DCDA0}
+        [data-theme="dark"] .advice-dont{background:#2A0808;color:#F0A0A0}
+        [data-theme="dark"] .advice-watch{background:#0A1E2D;color:#7BB8D4}
+        [data-theme="dark"] .advice-preg{background:#1A0A2D;color:#C4A8E8}
+
+        .flag-item{font-size:12.5px;color:#B91C1C;padding:3px 0;display:flex;align-items:center;gap:6px;line-height:1.5}
+        .btn-row{display:flex;gap:8px;margin-top:14px}
+        .result-btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+        .result-btn:active{transform:scale(0.97)}
+        .btn-restart{background:var(--primary);color:#fff}
+        .btn-restart:hover{background:var(--primary2)}
+        .btn-pdf{background:var(--bg);color:var(--primary);border:1px solid var(--primary)}
+        .btn-pdf:hover{background:var(--accent-bg)}
+        .empathy-text{font-style:italic;color:var(--text2);font-size:13.5px}
+    </style>
+</head>
+<body>
+<div class="header">
+    <a href="/" class="back-btn">&#8249;</a>
+    <div class="header-center">
+        <h1>
+            <span class="logo-icon"><svg width="18" height="18" viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="24" rx="3" fill="#388CB4"/><rect x="8" y="14" width="24" height="12" rx="3" fill="#388CB4"/></svg></span>
+            <span id="headerTitle">Diya</span>
+        </h1>
+        <p id="headerSub">Village Health Assistant</p>
+    </div>
+    <button class="icon-btn" onclick="toggleDark()" id="darkBtn" title="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+</div>
+<div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en',this)">English</button>
+    <button class="lang-btn" onclick="setLang('hi',this)">&#2361;&#2367;&#2306;&#2342;&#2368;</button>
+    <button class="lang-btn" onclick="setLang('ta',this)">&#2980;&#2990;&#3007;&#2996;&#3021;</button>
+</div>
+<div class="chat-area" id="chatArea"></div>
+<div class="input-area">
+    <button class="mode-btn" id="modeToggle" onclick="toggleMode()">Free Text</button>
+    <input type="text" id="freeInput" placeholder="Type symptoms..." style="display:none" onkeydown="if(event.key==='Enter')sendFreeText()">
+    <button class="circle-btn send-btn" id="sendBtn" style="display:none" onclick="sendFreeText()">&#10148;</button>
+</div>
+
+<script>
+let darkMode=false,currentLang='en',chatStep=0,freeTextMode=false,collectedData={},lastResult=null;
+const SPEECH_LANGS={en:'en-IN',hi:'hi-IN',ta:'ta-IN'};
+
+function toggleDark(){darkMode=!darkMode;document.documentElement.setAttribute('data-theme',darkMode?'dark':'');document.getElementById('darkBtn').innerHTML=darkMode?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';}
+
+// =====================================================
+// EMPATHETIC RESPONSES (what makes Diya feel human)
+// =====================================================
+const EMPATHY={
+en:{
+    name:'Diya',
+    greet:"Hello! I'm Diya, your health guide. Think of me as a friend who wants to help. I'll ask you a few simple questions to understand what's going on. Take your time.",
+    askWho:"First, tell me — who needs help today?",
+    empathy_who:{
+        self:"Okay, let's take care of you. I'm here to help.",
+        child:"I understand your worry about your little one. Let's figure this out together.",
+        elderly:"Caring for elders is so important. Let's see what we can do.",
+        pregnant:"Pregnancy is a special time, and it's good that you're seeking help. Let's make sure everything is okay.",
+    },
+    askProblem:"Now tell me, where is the main discomfort?",
+    askPreg:"I understand. Tell me what's been troubling you during the pregnancy?",
+    empathy_problem:{
+        stomach:"Stomach issues can be really uncomfortable. Let me understand more.",
+        chest:"Chest discomfort can be concerning. Let's look into this carefully.",
+        head:"Headaches and dizziness can really affect your day. Let me help.",
+        fever:"Fever can make you feel terrible. Let's understand what's happening.",
+        breathing:"Breathing trouble needs attention. You did the right thing coming here.",
+        injury:"I hope it's not too painful. Let me understand the injury better.",
+        other:"I understand. Let me ask a few questions to help.",
+    },
+    empathy_preg:{
+        preg_bleeding:"I know this must be scary. Bleeding during pregnancy needs careful attention. Let me ask a few more things.",
+        preg_headache:"Severe headache with swelling during pregnancy needs to be checked. You're doing the right thing by asking.",
+        preg_nausea:"Not being able to keep food down is exhausting. Let's see how to help you.",
+        preg_movement:"I can imagine how worried you must be. Let's understand this together.",
+        preg_pain:"Pain during pregnancy can be alarming. Let me gather some information.",
+        preg_water:"This is something that needs quick attention. Let me ask a couple more things.",
+        preg_fever:"Fever during pregnancy does need care. Let's figure out the next steps.",
+        preg_weakness:"Feeling weak during pregnancy is common but can sometimes be serious. Let's check.",
+        preg_breathing:"Breathing difficulty during pregnancy needs to be looked at. Let me help.",
+        preg_other:"I'm here to help with whatever you're going through.",
+    },
+    askSeverity:"How would you describe the intensity?",
+    empathy_severity:{
+        mild:"That's manageable, but still worth checking. ",
+        moderate:"I can see this is bothering you quite a bit. ",
+        severe:"I'm sorry you're going through this. Let's get you help. ",
+        critical:"I can see this is very serious. We'll move quickly. ",
+    },
+    askDuration:"And when did this start?",
+    askFever:"Do you also have fever?",
+    askBreathing:"Any trouble breathing?",
+    askGender:"What is your gender?",
+    askAge:"What is your exact age? (in years)",
+    askHistory:"Do you have any of these existing conditions?",
+    askMore:"Is there anything else you'd like to tell me? Any detail helps.",
+    analyzing:"Thank you for answering all my questions. Let me analyze everything carefully...",
+    skip:"Skip",
+},
+hi:{
+    name:'&#2342;&#2368;&#2351;&#2366;',
+    greet:"&#2344;&#2350;&#2360;&#2381;&#2340;&#2375;! &#2350;&#2376;&#2306; &#2342;&#2368;&#2351;&#2366; &#2361;&#2370;&#2305;, &#2310;&#2346;&#2325;&#2368; &#2360;&#2381;&#2357;&#2366;&#2360;&#2381;&#2341;&#2381;&#2351; &#2360;&#2361;&#2366;&#2351;&#2367;&#2325;&#2366;&#2404; &#2350;&#2369;&#2333;&#2375; &#2319;&#2325; &#2342;&#2379;&#2360;&#2381;&#2340; &#2360;&#2350;&#2333;&#2367;&#2319;&#2404; &#2325;&#2369;&#2331; &#2310;&#2360;&#2366;&#2344; &#2360;&#2357;&#2366;&#2354;&#2379;&#2306; &#2360;&#2375; &#2310;&#2346;&#2325;&#2368; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2360;&#2350;&#2333;&#2370;&#2305;&#2327;&#2368;&#2404;",
+    askWho:"&#2346;&#2361;&#2354;&#2375; &#2348;&#2340;&#2366;&#2311;&#2319; — &#2325;&#2367;&#2360;&#2375; &#2350;&#2342;&#2342; &#2330;&#2366;&#2361;&#2367;&#2319;?",
+    empathy_who:{self:"&#2330;&#2354;&#2367;&#2319; &#2310;&#2346;&#2325;&#2366; &#2326;&#2381;&#2351;&#2366;&#2354; &#2352;&#2326;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;",child:"&#2348;&#2330;&#2381;&#2330;&#2375; &#2325;&#2368; &#2330;&#2367;&#2306;&#2340;&#2366; &#2360;&#2381;&#2357;&#2366;&#2349;&#2366;&#2357;&#2367;&#2325; &#2361;&#2376;&#2404; &#2350;&#2367;&#2354;&#2325;&#2352; &#2360;&#2350;&#2333;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;",elderly:"&#2348;&#2369;&#2395;&#2369;&#2352;&#2381;&#2327;&#2379;&#2306; &#2325;&#2366; &#2326;&#2381;&#2351;&#2366;&#2354; &#2352;&#2326;&#2344;&#2366; &#2348;&#2361;&#2369;&#2340; &#2309;&#2330;&#2381;&#2331;&#2366; &#2361;&#2376;&#2404;",pregnant:"&#2327;&#2352;&#2381;&#2349;&#2366;&#2357;&#2360;&#2381;&#2341;&#2366; &#2350;&#2375;&#2306; &#2350;&#2342;&#2342; &#2350;&#2366;&#2305;&#2327;&#2344;&#2366; &#2360;&#2361;&#2368; &#2361;&#2376;&#2404; &#2330;&#2354;&#2367;&#2319; &#2342;&#2375;&#2326;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;"},
+    askProblem:"&#2348;&#2340;&#2366;&#2311;&#2319;, &#2350;&#2369;&#2326;&#2381;&#2351; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2325;&#2361;&#2366;&#2305; &#2361;&#2376;?",
+    askPreg:"&#2327;&#2352;&#2381;&#2349;&#2366;&#2357;&#2360;&#2381;&#2341;&#2366; &#2350;&#2375;&#2306; &#2325;&#2380;&#2344; &#2360;&#2368; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2361;&#2376;?",
+    empathy_problem:{stomach:"&#2346;&#2375;&#2335; &#2325;&#2368; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2348;&#2361;&#2369;&#2340; &#2346;&#2352;&#2375;&#2358;&#2366;&#2344; &#2325;&#2352;&#2340;&#2368; &#2361;&#2376;&#2404;",chest:"&#2360;&#2368;&#2344;&#2375; &#2350;&#2375;&#2306; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2325;&#2379; &#2327;&#2306;&#2349;&#2368;&#2352;&#2340;&#2366; &#2360;&#2375; &#2342;&#2375;&#2326;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;",head:"&#2360;&#2367;&#2352; &#2342;&#2352;&#2381;&#2342; &#2348;&#2361;&#2369;&#2340; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364;&#2342;&#2375;&#2361; &#2361;&#2376;&#2404;",fever:"&#2348;&#2369;&#2326;&#2366;&#2352; &#2350;&#2375;&#2306; &#2348;&#2361;&#2369;&#2340; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2361;&#2379;&#2340;&#2368; &#2361;&#2376;&#2404;",breathing:"&#2360;&#2366;&#2305;&#2360; &#2325;&#2368; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2346;&#2352; &#2343;&#2381;&#2351;&#2366;&#2344; &#2342;&#2375;&#2344;&#2366; &#2395;&#2352;&#2370;&#2352;&#2368; &#2361;&#2376;&#2404;",injury:"&#2330;&#2379;&#2335; &#2325;&#2366; &#2342;&#2352;&#2381;&#2342; &#2360;&#2350;&#2333; &#2360;&#2325;&#2340;&#2368; &#2361;&#2370;&#2305;&#2404;",other:"&#2360;&#2350;&#2333; &#2327;&#2312;&#2404; &#2325;&#2369;&#2331; &#2324;&#2352; &#2346;&#2370;&#2331;&#2340;&#2368; &#2361;&#2370;&#2305;&#2404;"},
+    empathy_preg:{preg_bleeding:"&#2351;&#2375; &#2337;&#2352;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2366; &#2361;&#2379; &#2360;&#2325;&#2340;&#2366; &#2361;&#2376;&#2404; &#2343;&#2381;&#2351;&#2366;&#2344; &#2360;&#2375; &#2342;&#2375;&#2326;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;",preg_headache:"&#2327;&#2306;&#2349;&#2368;&#2352;&#2340;&#2366; &#2360;&#2375; &#2354;&#2375; &#2352;&#2361;&#2375; &#2361;&#2376;&#2306;&#2404;",preg_nausea:"&#2348;&#2361;&#2369;&#2340; &#2341;&#2325;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2366; &#2361;&#2376;&#2404;",preg_movement:"&#2330;&#2367;&#2306;&#2340;&#2366; &#2360;&#2381;&#2357;&#2366;&#2349;&#2366;&#2357;&#2367;&#2325; &#2361;&#2376;&#2404;",preg_pain:"&#2342;&#2352;&#2381;&#2342; &#2330;&#2367;&#2306;&#2340;&#2366;&#2332;&#2344;&#2325; &#2361;&#2376;&#2404;",preg_water:"&#2351;&#2375; &#2340;&#2369;&#2352;&#2306;&#2340; &#2343;&#2381;&#2351;&#2366;&#2344; &#2342;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2368; &#2348;&#2366;&#2340; &#2361;&#2376;&#2404;",preg_fever:"&#2327;&#2352;&#2381;&#2349;&#2366;&#2357;&#2360;&#2381;&#2341;&#2366; &#2350;&#2375;&#2306; &#2348;&#2369;&#2326;&#2366;&#2352; &#2346;&#2352; &#2343;&#2381;&#2351;&#2366;&#2344; &#2342;&#2375;&#2344;&#2366; &#2395;&#2352;&#2370;&#2352;&#2368; &#2361;&#2376;&#2404;",preg_weakness:"&#2325;&#2350;&#2395;&#2379;&#2352;&#2368; &#2327;&#2306;&#2349;&#2368;&#2352; &#2361;&#2379; &#2360;&#2325;&#2340;&#2368; &#2361;&#2376;&#2404;",preg_breathing:"&#2360;&#2366;&#2305;&#2360; &#2325;&#2368; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2346;&#2352; &#2343;&#2381;&#2351;&#2366;&#2344; &#2342;&#2375;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404;",preg_other:"&#2360;&#2350;&#2333; &#2327;&#2312;&#2404;"},
+    askSeverity:"&#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2325;&#2367;&#2340;&#2344;&#2368; &#2361;&#2376;?",
+    empathy_severity:{mild:"&#2309;&#2330;&#2381;&#2331;&#2366;, &#2351;&#2375; &#2360;&#2306;&#2349;&#2366;&#2354;&#2344;&#2375; &#2354;&#2366;&#2351;&#2325; &#2361;&#2376;&#2404; ",moderate:"&#2360;&#2350;&#2333; &#2360;&#2325;&#2340;&#2368; &#2361;&#2370;&#2305; &#2351;&#2375; &#2346;&#2352;&#2375;&#2358;&#2366;&#2344; &#2325;&#2352; &#2352;&#2361;&#2366; &#2361;&#2376;&#2404; ",severe:"&#2348;&#2361;&#2369;&#2340; &#2340;&#2325;&#2354;&#2368;&#2347;&#2364; &#2361;&#2376;, &#2332;&#2354;&#2381;&#2342;&#2368; &#2350;&#2342;&#2342; &#2325;&#2352;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404; ",critical:"&#2351;&#2375; &#2327;&#2306;&#2349;&#2368;&#2352; &#2361;&#2376;&#2404; &#2332;&#2354;&#2381;&#2342;&#2368; &#2310;&#2327;&#2375; &#2348;&#2338;&#2364;&#2340;&#2375; &#2361;&#2376;&#2306;&#2404; "},
+    askDuration:"&#2351;&#2375; &#2325;&#2348; &#2360;&#2375; &#2361;&#2376;?",
+    askFever:"&#2325;&#2381;&#2351;&#2366; &#2348;&#2369;&#2326;&#2366;&#2352; &#2349;&#2368; &#2361;&#2376;?",
+    askBreathing:"&#2360;&#2366;&#2305;&#2360; &#2350;&#2375;&#2306; &#2342;&#2367;&#2325;&#2381;&#2325;&#2340;?",
+    askGender:"&#2354;&#2367;&#2306;&#2327;?",
+    askAge:"&#2313;&#2350;&#2381;&#2352; &#2325;&#2381;&#2351;&#2366; &#2361;&#2376;? (&#2360;&#2366;&#2354; &#2350;&#2375;&#2306;)",
+    askHistory:"&#2325;&#2379;&#2312; &#2346;&#2369;&#2352;&#2366;&#2344;&#2368; &#2348;&#2368;&#2350;&#2366;&#2352;&#2368;?",
+    askMore:"&#2325;&#2369;&#2331; &#2324;&#2352; &#2348;&#2340;&#2366;&#2344;&#2366; &#2330;&#2366;&#2361;&#2375;&#2306;&#2327;&#2375;?",
+    analyzing:"&#2360;&#2349;&#2368; &#2360;&#2357;&#2366;&#2354;&#2379;&#2306; &#2325;&#2375; &#2354;&#2367;&#2319; &#2343;&#2344;&#2381;&#2351;&#2357;&#2366;&#2342;&#2404; &#2343;&#2381;&#2351;&#2366;&#2344; &#2360;&#2375; &#2332;&#2366;&#2305;&#2330; &#2352;&#2361;&#2368; &#2361;&#2370;&#2305;...",
+    skip:"&#2331;&#2379;&#2337;&#2364;&#2375;&#2306;",
+},
+ta:{
+    name:'&#2980;&#3008;&#2991;&#3006;',
+    greet:"&#2997;&#2979;&#2965;&#3021;&#2965;&#2990;&#3021;! &#2984;&#3006;&#2985;&#3021; &#2980;&#3008;&#2991;&#3006;, &#2953;&#2969;&#3021;&#2965;&#2995;&#3021; &#2953;&#2975;&#2994;&#3021;&#2984;&#2994; &#2953;&#2980;&#2997;&#3007;&#2991;&#3006;&#2995;&#2992;&#3021;. &#2958;&#2995;&#3007;&#2991; &#2965;&#3015;&#2995;&#3021;&#2997;&#3007;&#2965;&#2995;&#3021; &#2990;&#3010;&#2994;&#2990;&#3021; &#2953;&#2969;&#3021;&#2965;&#2995;&#3021; &#2986;&#3007;&#2992;&#2970;&#3021;&#2970;&#2985;&#3016;&#2991;&#3016; &#2986;&#3009;&#2992;&#3007;&#2984;&#3021;&#2980;&#3009;&#2965;&#3018;&#2995;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;.",
+    askWho:"&#2990;&#3009;&#2980;&#2994;&#3007;&#2994;&#3021;, &#2991;&#3006;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009; &#2953;&#2980;&#2997;&#3007; &#2980;&#3015;&#2997;&#3016;?",
+    empathy_who:{self:"&#2970;&#2992;&#3007;, &#2953;&#2969;&#3021;&#2965;&#2995;&#3016; &#2986;&#3006;&#2992;&#3021;&#2980;&#3021;&#2980;&#3009;&#2965;&#3021;&#2965;&#3018;&#2995;&#3021;&#2997;&#3019;&#2990;&#3021;.",child:"&#2953;&#2969;&#3021;&#2965;&#2995;&#3021; &#2965;&#3009;&#2996;&#2984;&#3021;&#2980;&#3016; &#2986;&#2993;&#3021;&#2993;&#3007;&#2991; &#2965;&#2997;&#2994;&#3016; &#2986;&#3009;&#2992;&#3007;&#2965;&#3007;&#2993;&#2980;&#3009;.",elderly:"&#2990;&#3009;&#2980;&#3007;&#2991;&#2997;&#2992;&#3021;&#2965;&#2995;&#3016; &#2986;&#2992;&#3006;&#2990;&#2992;&#3007;&#2986;&#3021;&#2986;&#2980;&#3009; &#2990;&#3007;&#2965; &#2984;&#2994;&#3021;&#2994;&#2980;&#3009;.",pregnant:"&#2965;&#2992;&#3021;&#2986;&#3021;&#2986; &#2965;&#3006;&#2994;&#2980;&#3021;&#2980;&#3007;&#2994;&#3021; &#2953;&#2980;&#2997;&#3007; &#2965;&#3015;&#2975;&#3021;&#2986;&#2980;&#3009; &#2970;&#2992;&#3007;&#2991;&#3006;&#2985;&#2980;&#3009;."},
+    askProblem:"&#2990;&#3009;&#2965;&#3021;&#2965;&#3007;&#2991; &#2986;&#3007;&#2992;&#2970;&#3021;&#2970;&#2985;&#3016; &#2958;&#2969;&#3021;&#2965;&#3015;?",
+    askPreg:"&#2965;&#2992;&#3021;&#2986;&#3021;&#2986; &#2965;&#3006;&#2994;&#2980;&#3021;&#2980;&#3007;&#2994;&#3021; &#2958;&#2985;&#3021;&#2985; &#2986;&#3007;&#2992;&#2970;&#3021;&#2970;&#2985;&#3016;?",
+    empathy_problem:{stomach:"&#2997;&#2991;&#3007;&#2993;&#3021;&#2993;&#3009; &#2986;&#3007;&#2992;&#2970;&#3021;&#2970;&#2985;&#3016; &#2990;&#3007;&#2965; &#2965;&#2975;&#3007;&#2985;&#2990;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.",chest:"&#2984;&#3014;&#2974;&#3021;&#2970;&#3009; &#2997;&#2994;&#3007; &#2965;&#2997;&#2994;&#3016;&#2991;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3007;&#2993;&#2980;&#3009;.",head:"&#2980;&#2994;&#3016;&#2997;&#2994;&#3007; &#2990;&#3007;&#2965; &#2965;&#2975;&#3007;&#2985;&#2990;&#3006;&#2985;&#2980;&#3009;.",fever:"&#2965;&#3006;&#2991;&#3021;&#2970;&#3021;&#2970;&#2994;&#3021; &#2990;&#3007;&#2965; &#2965;&#2975;&#3007;&#2985;&#2990;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.",breathing:"&#2990;&#3010;&#2970;&#3021;&#2970;&#3009; &#2970;&#3007;&#2992;&#2990;&#2990;&#3021; &#2965;&#2997;&#2985;&#3007;&#2965;&#3021;&#2965; &#2997;&#3015;&#2979;&#3021;&#2975;&#3009;&#2990;&#3021;.",injury:"&#2965;&#3006;&#2991;&#2990;&#3021; &#2997;&#2994;&#3007;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021; &#2958;&#2985;&#3021;&#2993;&#3009; &#2986;&#3009;&#2992;&#3007;&#2965;&#3007;&#2993;&#2980;&#3009;.",other:"&#2986;&#3009;&#2992;&#3007;&#2984;&#3021;&#2980;&#3015;&#2985;&#3021;. &#2970;&#3007;&#2994; &#2965;&#3015;&#2995;&#3021;&#2997;&#3007;&#2965;&#2995;&#3021; &#2965;&#3015;&#2975;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;."},
+    empathy_preg:{preg_bleeding:"&#2951;&#2980;&#3009; &#2986;&#2991;&#2990;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;. &#2965;&#2997;&#2985;&#2990;&#3006;&#2965; &#2986;&#3006;&#2992;&#3021;&#2965;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;.",preg_headache:"&#2965;&#2997;&#2985;&#2990;&#3006;&#2965; &#2986;&#3006;&#2992;&#3021;&#2965;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;.",preg_nausea:"&#2990;&#3007;&#2965; &#2965;&#2975;&#3007;&#2985;&#2990;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.",preg_movement:"&#2965;&#2997;&#2994;&#3016; &#2986;&#3009;&#2992;&#3007;&#2965;&#3007;&#2993;&#2980;&#3009;.",preg_pain:"&#2997;&#2994;&#3007; &#2965;&#2997;&#2994;&#3016;&#2991;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.",preg_water:"&#2951;&#2980;&#3009; &#2953;&#2975;&#2985;&#2975;&#3007;&#2991;&#3006;&#2965; &#2965;&#2997;&#2985;&#3007;&#2965;&#3021;&#2965; &#2997;&#3015;&#2979;&#3021;&#2975;&#3009;&#2990;&#3021;.",preg_fever:"&#2965;&#3006;&#2991;&#3021;&#2970;&#3021;&#2970;&#2994;&#3021; &#2965;&#2997;&#2985;&#2990;&#3006;&#2965; &#2986;&#3006;&#2992;&#3021;&#2965;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;.",preg_weakness:"&#2986;&#2994;&#2997;&#3008;&#2985;&#2990;&#3021; &#2965;&#2997;&#2994;&#3016;&#2991;&#3006;&#2965; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3009;&#2990;&#3021;.",preg_breathing:"&#2990;&#3010;&#2970;&#3021;&#2970;&#3009; &#2970;&#3007;&#2992;&#2990;&#2990;&#3021; &#2965;&#2997;&#2985;&#3007;&#2965;&#3021;&#2965; &#2997;&#3015;&#2979;&#3021;&#2975;&#3009;&#2990;&#3021;.",preg_other:"&#2986;&#3009;&#2992;&#3007;&#2984;&#3021;&#2980;&#3015;&#2985;&#3021;."},
+    askSeverity:"&#2949;&#2993;&#3007;&#2965;&#3009;&#2993;&#3007;&#2965;&#2995;&#3007;&#2985;&#3021; &#2980;&#3008;&#2997;&#3007;&#2992;&#2990;&#3021; &#2958;&#2997;&#3021;&#2997;&#2995;&#2997;&#3009;?",
+    empathy_severity:{mild:"&#2951;&#2980;&#3009; &#2970;&#2990;&#3006;&#2995;&#3007;&#2965;&#3021;&#2965;&#2965;&#3021;&#2965;&#3010;&#2975;&#3007;&#2991;&#2980;&#3009;. ",moderate:"&#2951;&#2980;&#3009; &#2953;&#2969;&#3021;&#2965;&#2995;&#3016; &#2986;&#3006;&#2980;&#3007;&#2965;&#3021;&#2965;&#3007;&#2993;&#2980;&#3009; &#2958;&#2985;&#3021;&#2993;&#3009; &#2986;&#3009;&#2992;&#3007;&#2965;&#3007;&#2993;&#2980;&#3009;. ",severe:"&#2951;&#2980;&#3009; &#2965;&#2975;&#3007;&#2985;&#2990;&#3006;&#2985;&#2980;&#3009;. &#2953;&#2975;&#2985;&#3021; &#2953;&#2980;&#2997;&#3007; &#2970;&#3014;&#2991;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;. ",critical:"&#2951;&#2980;&#3009; &#2990;&#3007;&#2965; &#2965;&#2975;&#3009;&#2990;&#3016;&#2991;&#3006;&#2985;&#2980;&#3009;. &#2997;&#3007;&#2992;&#3016;&#2997;&#3006;&#2965; &#2970;&#3014;&#2991;&#2994;&#3021;&#2986;&#2975;&#3009;&#2997;&#3019;&#2990;&#3021;. "},
+    askDuration:"&#2951;&#2980;&#3009; &#2958;&#2986;&#3021;&#2986;&#3019;&#2980;&#3009; &#2980;&#3018;&#2975;&#2969;&#3021;&#2965;&#3007;&#2991;&#2980;&#3009;?",
+    askFever:"&#2965;&#3006;&#2991;&#3021;&#2970;&#3021;&#2970;&#2994;&#3021; &#2951;&#2992;&#3009;&#2965;&#3021;&#2965;&#3007;&#2993;&#2980;&#3006;?",
+    askBreathing:"&#2990;&#3010;&#2970;&#3021;&#2970;&#3009; &#2970;&#3007;&#2992;&#2990;&#2990;&#3021;?",
+    askGender:"&#2986;&#3006;&#2994;&#3007;&#2985;&#2990;&#3021;?",
+    askAge:"&#2997;&#2991;&#2980;&#3009; &#2958;&#2985;&#3021;&#2985;? (&#2997;&#2992;&#3009;&#2975;&#2969;&#3021;&#2965;&#2995;&#3007;&#2994;&#3021;)",
+    askHistory:"&#2990;&#3009;&#2984;&#3021;&#2980;&#3016;&#2991; &#2984;&#3019;&#2991;&#3021;&#2965;&#2995;&#3021;?",
+    askMore:"&#2997;&#3015;&#2993;&#3009; &#2958;&#2980;&#3006;&#2997;&#2980;&#3009; &#2970;&#3018;&#2994;&#3021;&#2994; &#2997;&#3007;&#2992;&#3009;&#2990;&#3021;&#2986;&#3009;&#2965;&#3007;&#2993;&#3008;&#2992;&#3021;&#2965;&#2995;&#3006;?",
+    analyzing:"&#2984;&#2985;&#3021;&#2993;&#3007;. &#2965;&#2997;&#2985;&#2990;&#3006;&#2965; &#2986;&#2965;&#3009;&#2986;&#3021;&#2986;&#3006;&#2991;&#3021;&#2997;&#3009; &#2970;&#3014;&#2991;&#3021;&#2965;&#3007;&#2993;&#3015;&#2985;&#3021;...",
+    skip:"&#2980;&#2997;&#3007;&#2992;&#3021;",
+}
+};
+
+// OPTION BUTTONS — no emojis
+const OPTS={
+en:{
+    who:[{id:'self',label:'Myself'},{id:'child',label:'Child'},{id:'elderly',label:'Elderly'},{id:'pregnant',label:'Pregnant',cls:'warn'}],
+    problems:[{id:'stomach',label:'Stomach / Abdomen'},{id:'chest',label:'Chest'},{id:'head',label:'Head / Dizziness'},{id:'fever',label:'Fever'},{id:'breathing',label:'Breathing'},{id:'injury',label:'Injury'},{id:'other',label:'Other'}],
+    pregProblems:[{id:'preg_bleeding',label:'Bleeding',cls:'warn'},{id:'preg_headache',label:'Severe headache + swelling',cls:'warn'},{id:'preg_nausea',label:'Cannot stop vomiting'},{id:'preg_movement',label:'Baby not moving',cls:'warn'},{id:'preg_pain',label:'Stomach pain / contractions'},{id:'preg_water',label:'Water leaking',cls:'warn'},{id:'preg_fever',label:'Fever'},{id:'preg_weakness',label:'Extreme weakness'},{id:'preg_breathing',label:'Difficulty breathing'},{id:'preg_other',label:'Other'}],
+    severity:[{id:'mild',label:'Mild'},{id:'moderate',label:'Moderate'},{id:'severe',label:'Severe'},{id:'critical',label:'Critical',cls:'warn'}],
+    duration:[{id:'hours',label:'Today'},{id:'days',label:'2-3 days'},{id:'week',label:'~1 week'},{id:'long',label:'Over a week'}],
+    yesNo:[{id:'yes',label:'Yes'},{id:'no',label:'No'}],
+    gender:[{id:'M',label:'Male'},{id:'F',label:'Female'}],
+    history:[{id:'diabetes',label:'Diabetes'},{id:'bp',label:'High BP'},{id:'heart',label:'Heart disease'},{id:'asthma',label:'Asthma/COPD'},{id:'none',label:'None'}],
+    placeholder:'Type symptoms...',
+},
+hi:{
+    who:[{id:'self',label:'खुद के लिए'},{id:'child',label:'बच्चे के लिए'},{id:'elderly',label:'बुज़ुर्ग के लिए'},{id:'pregnant',label:'गर्भवती',cls:'warn'}],
+    problems:[{id:'stomach',label:'पेट'},{id:'chest',label:'छाती'},{id:'head',label:'सिर / चक्कर'},{id:'fever',label:'बुखार'},{id:'breathing',label:'साँस'},{id:'injury',label:'चोट'},{id:'other',label:'और कुछ'}],
+    pregProblems:[{id:'preg_bleeding',label:'खून आ रहा है',cls:'warn'},{id:'preg_headache',label:'तेज़ सिरदर्द + सूजन',cls:'warn'},{id:'preg_nausea',label:'उल्टी रुक नहीं रही'},{id:'preg_movement',label:'बच्चा नहीं हिल रहा',cls:'warn'},{id:'preg_pain',label:'पेट दर्द / संकुचन'},{id:'preg_water',label:'पानी निकल रहा है',cls:'warn'},{id:'preg_fever',label:'बुखार'},{id:'preg_weakness',label:'बहुत कमज़ोरी'},{id:'preg_breathing',label:'साँस में तकलीफ़'},{id:'preg_other',label:'और कुछ'}],
+    severity:[{id:'mild',label:'हल्की'},{id:'moderate',label:'मध्यम'},{id:'severe',label:'तेज़'},{id:'critical',label:'बहुत गंभीर',cls:'warn'}],
+    duration:[{id:'hours',label:'आज'},{id:'days',label:'2-3 दिन'},{id:'week',label:'~1 हफ़्ता'},{id:'long',label:'1 हफ़्ते से ज़्यादा'}],
+    yesNo:[{id:'yes',label:'हाँ'},{id:'no',label:'नहीं'}],
+    gender:[{id:'M',label:'पुरुष'},{id:'F',label:'महिला'}],
+    history:[{id:'diabetes',label:'शुगर'},{id:'bp',label:'बीपी'},{id:'heart',label:'हृदय रोग'},{id:'asthma',label:'दमा'},{id:'none',label:'कोई नहीं'}],
+    placeholder:'लक्षण लिखें...',
+},
+ta:{
+    who:[{id:'self',label:'எனக்கு'},{id:'child',label:'குழந்தைக்கு'},{id:'elderly',label:'முதியவருக்கு'},{id:'pregnant',label:'கர்ப்பிணி',cls:'warn'}],
+    problems:[{id:'stomach',label:'வயிறு'},{id:'chest',label:'நெஞ்சு'},{id:'head',label:'தலை / மயக்கம்'},{id:'fever',label:'காய்ச்சல்'},{id:'breathing',label:'மூச்சு'},{id:'injury',label:'காயம்'},{id:'other',label:'வேறு'}],
+    pregProblems:[{id:'preg_bleeding',label:'இரத்தப்போக்கு',cls:'warn'},{id:'preg_headache',label:'கடும் தலைவலி + வீக்கம்',cls:'warn'},{id:'preg_nausea',label:'தொடர் வாந்தி'},{id:'preg_movement',label:'குழந்தை அசையவில்லை',cls:'warn'},{id:'preg_pain',label:'வயிற்று வலி'},{id:'preg_water',label:'நீர் கசிவு',cls:'warn'},{id:'preg_fever',label:'காய்ச்சல்'},{id:'preg_weakness',label:'மிகுந்த பலவீனம்'},{id:'preg_breathing',label:'மூச்சு சிரமம்'},{id:'preg_other',label:'வேறு'}],
+    severity:[{id:'mild',label:'லேசான'},{id:'moderate',label:'மிதமான'},{id:'severe',label:'கடுமையான'},{id:'critical',label:'மிக கடுமையான',cls:'warn'}],
+    duration:[{id:'hours',label:'இன்று'},{id:'days',label:'2-3 நாட்கள்'},{id:'week',label:'~1 வாரம்'},{id:'long',label:'1 வாரத்திற்கு மேல்'}],
+    yesNo:[{id:'yes',label:'ஆம்'},{id:'no',label:'இல்லை'}],
+    gender:[{id:'M',label:'ஆண்'},{id:'F',label:'பெண்'}],
+    history:[{id:'diabetes',label:'சர்க்கரை'},{id:'bp',label:'BP'},{id:'heart',label:'இதய நோய்'},{id:'asthma',label:'ஆஸ்துமா'},{id:'none',label:'இல்லை'}],
+    placeholder:'அறிகுறிகள் தட்டச்சு செய்யுங்கள்...',
+}
+};
+
+// FIRST AID
+const FIRST_AID={en:{stomach:{do:'Lie down comfortably. Take small sips of water. Try deep, slow breathing.',dont:'Do NOT eat oily/spicy food. Do NOT take painkillers on empty stomach.',watch:'If vomiting blood, passing black stool, or pain suddenly worsens.'},chest:{do:'Sit upright, do NOT lie flat. Loosen tight clothing. If aspirin is available and no allergy, chew one tablet (325mg).',dont:'Do NOT ignore it. Do NOT exert physically. Do NOT wait if pain lasts over 15 minutes.',watch:'If pain spreads to arm/jaw, sweating heavily, or feeling faint.'},head:{do:'Rest in a quiet, dark room. Place a cold cloth on forehead. Take paracetamol if available.',dont:'Do NOT stare at bright screens. Do NOT ignore sudden worst-ever headache.',watch:'If neck becomes stiff, vision changes, confusion, or loss of consciousness.'},fever:{do:'Take paracetamol (per age/weight). Sponge body with lukewarm water. Drink plenty of fluids / ORS.',dont:'Do NOT use ice-cold water for sponging. Do NOT over-bundle in blankets.',watch:'If temperature exceeds 40 deg C, seizure occurs, or rash appears.'},breathing:{do:'Sit upright, lean slightly forward. Open windows for fresh air. Use inhaler if available.',dont:'Do NOT lie flat. Do NOT panic. Do NOT give water if severely breathless.',watch:'If lips turn blue, cannot complete sentences, or loses consciousness.'},injury:{do:'Apply direct pressure on wound with clean cloth. Elevate the injured limb. Immobilize if fracture suspected.',dont:'Do NOT remove objects embedded in wound. Do NOT move patient if spine injury suspected.',watch:'If bleeding does not stop after 10 minutes, numbness develops, or bone is visible.'},other:{do:'Rest and stay hydrated. Monitor temperature if fever suspected. Note any new symptoms.',dont:'Do NOT self-medicate with strong drugs. Do NOT delay if symptoms worsen.',watch:'If new serious symptoms appear or condition rapidly deteriorates.'}},
+hi:{stomach:{do:'आराम से लेटें। थोड़ा-थोड़ा पानी पिएं।',dont:'तला-मसालेदार खाना न खाएं। खाली पेट दर्द की दवा न लें।',watch:'अगर खून की उल्टी हो, काला मल आए, या दर्द अचानक बढ़ जाए।'},chest:{do:'सीधे बैठें, लेटें नहीं। तंग कपड़े ढीले करें।',dont:'नज़रअंदाज़ न करें। शारीरिक मेहनत न करें।',watch:'अगर दर्द बाँह/जबड़े तक जाए, बहुत पसीना आए।'},head:{do:'शांत अंधेरे कमरे में आराम करें। माथे पर ठंडा कपड़ा रखें।',dont:'तेज़ स्क्रीन न देखें। अचानक तेज़ सिरदर्द को नज़रअंदाज़ न करें।',watch:'गर्दन अकड़ जाए, नज़र में बदलाव, या बेहोशी।'},fever:{do:'पैरासिटामॉल लें। गुनगुने पानी से स्पंजिंग करें। ORS / पानी पिएं।',dont:'बर्फ़ के पानी से स्पंज न करें। बहुत कंबल न ओढ़ाएं।',watch:'तापमान 40°C से ऊपर, दौरे, या शरीर पर दाने।'},breathing:{do:'सीधे बैठें, आगे झुकें। खिड़की खोलें। इनहेलर उपलब्ध हो तो इस्तेमाल करें।',dont:'लेटें नहीं। घबराएं नहीं।',watch:'होंठ नीले पड़ें, बात पूरी न कर पाएं।'},injury:{do:'साफ कपड़े से दबाव डालें। घायल अंग ऊपर उठाएं।',dont:'घाव में फंसी चीज़ न निकालें। रीढ़ की चोट हो तो हिलाएं नहीं।',watch:'10 मिनट बाद भी खून न रुके, सुन्नपन आए।'},other:{do:'आराम करें। पानी पिएं। तापमान पर नज़र रखें।',dont:'बिना डॉक्टर तेज़ दवा न लें।',watch:'अगर नए गंभीर लक्षण दिखें।'}},
+ta:{stomach:{do:'வசதியாக படுங்கள். சிறிதளவு நீர் பருகுங்கள்.',dont:'எண்ணெய்/காரமான உணவு வேண்டாம்.',watch:'இரத்த வாந்தி, கருப்பு மலம், வலி அதிகரித்தால்.'},chest:{do:'நேராக உட்காருங்கள். இறுக்கமான ஆடைகளை தளர்த்துங்கள்.',dont:'புறக்கணிக்காதீர்கள். உடல் உழைப்பு வேண்டாம்.',watch:'வலி கை/தாடைக்கு பரவினால், அதிகம் வியர்த்தால்.'},head:{do:'அமைதியான இருட்டு அறையில் ஓய்வெடுங்கள்.',dont:'பிரகாசமான திரைகளை பார்க்காதீர்கள்.',watch:'கழுத்து விறைப்பு, பார்வை மாற்றம், மயக்கம்.'},fever:{do:'பாரசிட்டமால் எடுங்கள். வெதுவெதுப்பான நீரால் ஒத்தடம் கொடுங்கள்.',dont:'மிகக் குளிர்ந்த நீர் பயன்படுத்தாதீர்கள்.',watch:'வெப்பநிலை 40°C மேல், வலிப்பு, தடிப்பு.'},breathing:{do:'நேராக உட்கார்ந்து முன்னால் சாயுங்கள்.',dont:'படுக்காதீர்கள். பீதி வேண்டாம்.',watch:'உதடுகள் நீலமானால், பேச இயலவில்லை என்றால்.'},injury:{do:'சுத்தமான துணியால் அழுத்தம் கொடுங்கள்.',dont:'காயத்தில் உள்ள பொருளை எடுக்காதீர்கள்.',watch:'10 நிமிடம் கழித்தும் இரத்தம் நிற்கவில்லை என்றால்.'},other:{do:'ஓய்வெடுங்கள். நீர் அருந்துங்கள்.',dont:'மருத்துவர் இல்லாமல் மருந்து வேண்டாம்.',watch:'புதிய கடுமையான அறிகுறிகள் தோன்றினால்.'}}
+};
+
+const ACTIONS={
+en:{0:"No immediate concern. Rest at home. See a doctor if symptoms persist or worsen.",1:"See a doctor within a few hours.",2:"Urgent attention needed. Visit the nearest health centre promptly.",3:"This is serious. Please rush to the nearest hospital immediately."},
+hi:{0:"अभी चिंता नहीं। आराम करें। जारी रहे तो डॉक्टर को दिखाएं।",1:"कुछ घंटों में डॉक्टर को दिखाएं।",2:"जल्दी ध्यान देना ज़रूरी है। नज़दीकी स्वास्थ्य केंद्र जाएं।",3:"यह गंभीर है। कृपया जल्दी से जल्दी अस्पताल जाएं।"},
+ta:{0:"இப்போது கவலை தேவையில்லை. ஓய்வு எடுங்கள். தொடர்ந்தால் மருத்துவரை அணுகுங்கள்.",1:"சில மணி நேரத்தில் மருத்துவரை அணுகுங்கள்.",2:"விரைவில் கவனிக்க வேண்டும். அருகிலுள்ள மருத்துவ மையத்திற்கு செல்லுங்கள்.",3:"இது கடுமையானது. உடனடியாக மருத்துவமனைக்கு செல்லுங்கள்."}};
+
+// PREGNANCY ADVICE
+const PREG_ADVICE={en:{preg_bleeding:"Lie down immediately. Do NOT lift anything heavy. Go to hospital NOW. Vaginal bleeding in pregnancy is always serious.",preg_headache:"Check blood pressure urgently. This could be preeclampsia. If BP is above 140/90, go to hospital immediately.",preg_nausea:"Try small sips of ORS every few minutes. Eat dry crackers. If you cannot keep anything down for 12+ hours, see a doctor.",preg_movement:"Drink cold water. Lie on your left side for 1 hour. Count kicks. If less than 10 movements in 2 hours, go to hospital IMMEDIATELY.",preg_pain:"Time the contractions. If they come every 5 minutes or less before 37 weeks, this could be premature labor. Go to hospital.",preg_water:"This is an emergency. Do NOT insert anything. Keep the area clean. Go to hospital IMMEDIATELY to prevent infection.",preg_fever:"Take paracetamol only. See a doctor TODAY. Fever during pregnancy can affect the baby.",preg_weakness:"This may be severe anemia. Eat iron-rich foods (green vegetables, jaggery). Get a blood test done urgently.",preg_breathing:"Sit upright. This needs urgent evaluation. Could indicate heart or lung problems. Go to hospital.",preg_other:"Trust your instincts. If something feels wrong during pregnancy, always see a doctor. Do not delay."},
+hi:{preg_bleeding:"तुरंत लेट जाएं। भारी चीज़ न उठाएं। तुरंत अस्पताल जाएं!",preg_headache:"तुरंत बीपी जाँच कराएं। 140/90 से ऊपर हो तो तुरंत अस्पताल जाएं।",preg_nausea:"थोड़ी-थोड़ी देर में ORS के घूँट लें। 12 घंटे से ज़्यादा हो तो डॉक्टर को दिखाएं।",preg_movement:"ठंडा पानी पिएं। बाईं तरफ़ लेटें। 2 घंटे में 10 से कम हरकत हो तो तुरंत अस्पताल जाएं!",preg_pain:"संकुचन का समय नोट करें। 37 हफ़्ते से पहले हर 5 मिनट में आ रहे हों तो अस्पताल जाएं।",preg_water:"यह आपातकाल है। कुछ भी अंदर न डालें। तुरंत अस्पताल जाएं!",preg_fever:"सिर्फ़ पैरासिटामॉल लें। आज ही डॉक्टर को दिखाएं।",preg_weakness:"गंभीर खून की कमी हो सकती है। हरी सब्ज़ी, गुड़ खाएं। खून की जाँच कराएं।",preg_breathing:"सीधे बैठें। तुरंत जाँच ज़रूरी है। अस्पताल जाएं।",preg_other:"अगर कुछ भी गलत लगे तो देर न करें। डॉक्टर को दिखाएं।"},
+ta:{preg_bleeding:"உடனடியாக படுங்கள். மருத்துவமனைக்கு செல்லுங்கள்!",preg_headache:"உடனடியாக BP பரிசோதனை செய்யுங்கள்.",preg_nausea:"ORS சிறிய குடிப்புகள் எடுங்கள். 12 மணி நேரம் மேல் தொடர்ந்தால் மருத்துவரை அணுகுங்கள்.",preg_movement:"குளிர்ந்த நீர் குடியுங்கள். இடது பக்கம் படுங்கள். 2 மணி நேரத்தில் 10 அசைவுகள் இல்லையெனில் மருத்துவமனைக்கு செல்லுங்கள்!",preg_pain:"சுருக்கங்களின் நேரத்தை குறியுங்கள். மருத்துவமனைக்கு செல்லுங்கள்.",preg_water:"இது அவசரநிலை. உடனடியாக மருத்துவமனைக்கு செல்லுங்கள்!",preg_fever:"பாரசிட்டமால் மட்டும் எடுங்கள். இன்றே மருத்துவரை அணுகுங்கள்.",preg_weakness:"இரும்புச்சத்து உணவு சாப்பிடுங்கள். இரத்த பரிசோதனை செய்யுங்கள்.",preg_breathing:"நேராக உட்காருங்கள். மருத்துவமனைக்கு செல்லுங்கள்.",preg_other:"எதாவது தவறாக இருந்தால் மருத்துவரை அணுகுங்கள்."}};
+
+let L,O;
+function setLang(lang,btn){currentLang=lang;L=EMPATHY[lang];O=OPTS[lang];
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('headerTitle').textContent=lang==='en'?'Diya':lang==='hi'?'&#2342;&#2368;&#2351;&#2366;':'&#2980;&#3008;&#2991;&#3006;';
+    document.getElementById('freeInput').placeholder=L.placeholder||'Type symptoms...';
+    restartChat();}
+
+// =====================================================
+// SPEECH & UI HELPERS
+// =====================================================
+function speak(t){
+    if(!('speechSynthesis' in window))return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    u.lang=SPEECH_LANGS[currentLang];
+    u.rate=0.9;
+    const voices=window.speechSynthesis.getVoices();
+    const langCode=SPEECH_LANGS[currentLang].slice(0,2);
+    const femaleVoice=voices.find(v=>v.lang.startsWith(langCode)&&(v.name.toLowerCase().includes('female')||v.name.toLowerCase().includes('woman')||v.name.toLowerCase().includes('zira')||v.name.toLowerCase().includes('heera')||v.name.toLowerCase().includes('kalpana')));
+    if(femaleVoice)u.voice=femaleVoice;
+    window.speechSynthesis.speak(u);
+}
+window.speechSynthesis.onvoiceschanged=()=>{};
+function getTime(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+
+// Bot avatar: clean medical cross icon
+const AVATAR_SVG='<svg width="18" height="18" viewBox="0 0 40 40" fill="none"><rect x="14" y="8" width="12" height="24" rx="3" fill="#388CB4"/><rect x="8" y="14" width="24" height="12" rx="3" fill="#388CB4"/></svg>';
+
+function addBot(text,options,autoSpeak=false){
+    const c=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg bot';
+    let oh='';if(options)oh='<div class="options">'+options.map(o=>`<button class="opt-btn ${o.cls||''}" onclick="handleOpt('${o.id}',this)">${o.label}</button>`).join('')+'</div>';
+    d.innerHTML=`<div class="avatar">${AVATAR_SVG}</div><div><div class="bubble"><button class="speak-btn" data-speakbtn title="Listen"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg></button>${text}${oh}</div><div class="msg-time">${getTime()}</div></div>`;
+    c.appendChild(d);
+    const sb=d.querySelector('[data-speakbtn]');
+    if(sb){const pt=d.querySelector('.bubble').textContent.replace(/[\s]+/g,' ').trim();sb.addEventListener('click',()=>speak(pt));}
+    c.scrollTop=c.scrollHeight;}
+function addUser(t){const c=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg user';d.innerHTML=`<div><div class="bubble">${t}</div><div class="msg-time">${getTime()}</div></div>`;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function showTyping(){const c=document.getElementById('chatArea'),d=document.createElement('div');d.className='typing-wrap';d.id='ti';d.innerHTML=`<div class="avatar" style="background:var(--accent-bg);border:1px solid rgba(56,140,180,0.15)">${AVATAR_SVG}</div><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function hideTyping(){const e=document.getElementById('ti');if(e)e.remove();}
+
+// =====================================================
+// CONVERSATION FLOW
+// =====================================================
+const STEPS=['welcome','name','who','problem','severity','duration','followup1','followup2','gender','age','history','more','analyze'];
+const PREG_STEPS=['welcome','name','who','pregProblem','severity','duration','gender','age','history','analyze'];
+let activeSteps=STEPS;
+
+const FOLLOWUPS={
+en:{
+    stomach:{q1:"Are you experiencing vomiting or nausea?", q2:"Have you noticed any blood in your vomit or stool?",q1key:'vomiting', q2key:'blood_stool'},
+    chest:{q1:"Does the pain spread to your arm, jaw, or back?", q2:"Are you sweating heavily or feeling nauseous?",q1key:'radiating_pain', q2key:'sweating'},
+    head:{q1:"Any vision changes or stiff neck?", q2:"Is this the worst headache you have ever experienced?",q1key:'vision_neck', q2key:'worst_headache'},
+    fever:{q1:"Do you also have cough or cold symptoms?", q2:"Any rash on your skin or joint pain?",q1key:'cough_cold', q2key:'rash_joints'},
+    breathing:{q1:"Do you hear any wheezing or whistling sound while breathing?", q2:"Do you also have chest pain or tightness?",q1key:'wheezing', q2key:'chest_pain'},
+    injury:{q1:"Is there active bleeding right now?", q2:"Can you move the injured body part?",q1key:'bleeding', q2key:'can_move'},
+    other:{q1:"Do you have any fever?", q2:"Any difficulty breathing?",q1key:'fever', q2key:'breathing'}
+},
+hi:{
+    stomach:{q1:"क्या उल्टी या जी मिचलाना हो रहा है?", q2:"क्या उल्टी या मल में खून आया है?"},
+    chest:{q1:"क्या दर्द बाँह, जबड़े या पीठ तक जा रहा है?", q2:"क्या बहुत पसीना आ रहा है या जी मिचला रहा है?"},
+    head:{q1:"क्या नज़र में बदलाव या गर्दन में अकड़न है?", q2:"क्या यह अब तक का सबसे तेज़ सिरदर्द है?"},
+    fever:{q1:"क्या खांसी या ज़ुकाम भी है?", q2:"क्या शरीर पर दाने या जोड़ों में दर्द है?"},
+    breathing:{q1:"क्या साँस लेते वक़्त सीटी जैसी आवाज़ आती है?", q2:"क्या सीने में दर्द या जकड़न भी है?"},
+    injury:{q1:"क्या अभी खून बह रहा है?", q2:"क्या चोट वाला अंग हिला सकते हैं?"},
+    other:{q1:"क्या बुखार है?", q2:"क्या साँस लेने में तकलीफ है?"}
+},
+ta:{
+    stomach:{q1:"வாந்தி அல்லது குமட்டல் இருக்கிறதா?", q2:"வாந்தி அல்லது மலத்தில் இரத்தம் வருகிறதா?"},
+    chest:{q1:"வலி கை, தாடை அல்லது முதுகுக்கு பரவுகிறதா?", q2:"அதிகமாக வியர்க்கிறதா அல்லது குமட்டல் இருக்கிறதா?"},
+    head:{q1:"பார்வை மாற்றம் அல்லது கழுத்து விறைப்பு இருக்கிறதா?", q2:"இது இதுவரை வந்ததில் மிக கடுமையான தலைவலியா?"},
+    fever:{q1:"இருமல் அல்லது சளி இருக்கிறதா?", q2:"தோலில் தடிப்பு அல்லது மூட்டு வலி இருக்கிறதா?"},
+    breathing:{q1:"மூச்சு விடும்போது விசில் சத்தம் வருகிறதா?", q2:"நெஞ்சு வலி அல்லது இறுக்கம் இருக்கிறதா?"},
+    injury:{q1:"இப்போது இரத்தம் வருகிறதா?", q2:"காயமடைந்த பகுதியை அசைக்க முடிகிறதா?"},
+    other:{q1:"காய்ச்சல் இருக்கிறதா?", q2:"மூச்சு விடுவதில் சிரமம் இருக்கிறதா?"}
+}
+};
+
+function restartChat(){document.getElementById('chatArea').innerHTML='';chatStep=0;collectedData={};lastResult=null;freeTextMode=false;activeSteps=STEPS;updateMode();nextStep();}
+
+function nextStep(){
+    const s=activeSteps[chatStep];
+    const prob=collectedData.problem||'other';
+    const fu=FOLLOWUPS[currentLang]?FOLLOWUPS[currentLang][prob]||FOLLOWUPS[currentLang].other:FOLLOWUPS.en[prob]||FOLLOWUPS.en.other;
+    switch(s){
+        case 'welcome':addBot(L.greet);chatStep++;setTimeout(()=>nextStep(),2000);break;
+        case 'name':showNameInput();break;
+        case 'who':addBot(L.askWho,O.who);break;
+        case 'problem':addBot(L.askProblem,O.problems);break;
+        case 'pregProblem':addBot(L.askPreg,O.pregProblems);break;
+        case 'severity':addBot(L.askSeverity,O.severity);break;
+        case 'duration':addBot(L.askDuration,O.duration);break;
+        case 'followup1':addBot(fu.q1,O.yesNo);break;
+        case 'followup2':addBot(fu.q2,O.yesNo);break;
+        case 'gender':addBot(L.askGender,O.gender);break;
+        case 'age':showAgeInput();break;
+        case 'history':addBot(L.askHistory,O.history);break;
+        case 'more':addBot(L.askMore,[{id:'skip',label:L.skip}]);freeTextMode=true;updateMode();break;
+        case 'analyze':runAnalysis();break;
+    }
+}
+
+function handleOpt(id,btn){
+    btn.parentElement.querySelectorAll('.opt-btn').forEach(b=>{b.classList.remove('selected');b.disabled=true;});
+    btn.classList.add('selected');
+    addUser(btn.textContent.trim());
+    const s=activeSteps[chatStep];
+
+    if(s==='who'&&id==='pregnant'){
+        collectedData.who=id;collectedData.isPregnant=true;collectedData.gender='F';
+        activeSteps=PREG_STEPS;chatStep=PREG_STEPS.indexOf('pregProblem');
+        showTyping();setTimeout(()=>{hideTyping();addBot(L.empathy_who.pregnant);setTimeout(()=>nextStep(),1200);},800);return;
+    }
+
+    let empathyText='';
+    switch(s){
+        case 'who':collectedData.who=id;empathyText=L.empathy_who[id]||'';break;
+        case 'problem':collectedData.problem=id;empathyText=L.empathy_problem[id]||'';break;
+        case 'pregProblem':collectedData.problem=id;collectedData.pregProblem=id;empathyText=L.empathy_preg[id]||'';break;
+        case 'severity':collectedData.severity=id;empathyText=L.empathy_severity[id]||'';break;
+        case 'duration':collectedData.duration=id;break;
+        case 'followup1':collectedData.followup1=id;break;
+        case 'followup2':collectedData.followup2=id;break;
+        case 'gender':collectedData.gender=id;break;
+        case 'history':collectedData.history=id;break;
+        case 'more':collectedData.extra='';break;
+    }
+    chatStep++;
+    if(empathyText){
+        showTyping();setTimeout(()=>{hideTyping();addBot(`<span class="empathy-text">${empathyText}</span>`,null,false);setTimeout(()=>nextStep(),1200);},900);
+    }else{setTimeout(()=>nextStep(),500);}
+}
+
+function showNameInput(){
+    const askName=currentLang==='hi'?'सबसे पहले, मरीज़ का नाम बताइए':currentLang==='ta'?'முதலில், நோயாளியின் பெயர் என்ன?':'First, what is the patient\'s name?';
+    const c=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg bot';
+    d.innerHTML=`<div class="avatar">${AVATAR_SVG}</div><div><div class="bubble">${askName}<div style="margin-top:10px;display:flex;gap:8px;align-items:center"><input type="text" id="nameInput" placeholder="${currentLang==='hi'?'नाम लिखें':currentLang==='ta'?'பெயர் தட்டச்சு செய்யுங்கள்':'Enter name'}" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;background:var(--bg);color:var(--text);font-family:inherit" onkeydown="if(event.key==='Enter')submitName()"><button class="opt-btn" onclick="submitName()" style="padding:9px 16px;font-weight:600">OK</button></div></div><div class="msg-time">${getTime()}</div></div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
+    setTimeout(()=>{const i=document.getElementById('nameInput');if(i)i.focus();},300);
+}
+function submitName(){
+    const i=document.getElementById('nameInput'),n=i.value.trim();
+    if(!n){i.style.borderColor='#B91C1C';return;}
+    i.disabled=true;
+    collectedData.patientName=n.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+    addUser(collectedData.patientName);
+    chatStep++;setTimeout(()=>nextStep(),500);
+}
+
+function showAgeInput(){
+    const t=L.askAge;const c=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg bot';
+    d.innerHTML=`<div class="avatar">${AVATAR_SVG}</div><div><div class="bubble">${t}<div style="margin-top:10px;display:flex;gap:8px;align-items:center"><input type="number" id="ageInput" min="0" max="100" placeholder="e.g. 35" style="width:100px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;background:var(--bg);color:var(--text);text-align:center;font-family:inherit" onkeydown="if(event.key==='Enter')submitAge()"><button class="opt-btn" onclick="submitAge()" style="padding:9px 16px;font-weight:600">OK</button></div></div><div class="msg-time">${getTime()}</div></div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
+    setTimeout(()=>{const i=document.getElementById('ageInput');if(i)i.focus();},300);
+}
+function submitAge(){const i=document.getElementById('ageInput'),a=parseInt(i.value);if(isNaN(a)||a<0||a>120){i.style.borderColor='#B91C1C';return;}i.disabled=true;collectedData.age=a;collectedData.exactAge=a;addUser(a+(currentLang==='hi'?' &#2360;&#2366;&#2354;':currentLang==='ta'?' &#2997;&#2991;&#2980;&#3009;':' years'));chatStep++;setTimeout(()=>nextStep(),500);}
+
+function toggleMode(){freeTextMode=!freeTextMode;updateMode();}
+function updateMode(){const t=document.getElementById('modeToggle'),i=document.getElementById('freeInput'),s=document.getElementById('sendBtn');if(freeTextMode){t.classList.add('active');t.textContent='Guided';i.style.display='block';s.style.display='flex';}else{t.classList.remove('active');t.textContent='Free Text';i.style.display='none';s.style.display='none';}}
+function sendFreeText(){const i=document.getElementById('freeInput'),t=i.value.trim();if(!t)return;addUser(t);i.value='';
+    if(activeSteps[chatStep]==='more'){collectedData.extra=t;chatStep++;setTimeout(()=>nextStep(),500);}
+    else{collectedData.freeText=t;collectedData.extra=t;chatStep=activeSteps.indexOf('analyze');setTimeout(()=>nextStep(),500);}}
+
+// =====================================================
+// ANALYSIS
+// =====================================================
+async function runAnalysis(){
+    showTyping();addBot(L.analyzing,null,false);
+    const age=collectedData.exactAge||(collectedData.who==='child'?8:collectedData.who==='elderly'?70:35);
+    const sevMap={mild:2,moderate:5,severe:8,critical:9};const pain=sevMap[collectedData.severity]||3;
+    const probText={stomach:'abdominal pain nausea stomach',chest:'chest pain tightness',head:'headache dizziness',fever:'high fever body aches',breathing:'difficulty breathing shortness of breath',injury:'injury wound pain',other:'feeling unwell',preg_bleeding:'pregnant vaginal bleeding',preg_headache:'pregnant severe headache swollen preeclampsia high blood pressure',preg_nausea:'pregnant severe vomiting dehydration',preg_movement:'pregnant reduced fetal movement baby not moving',preg_pain:'pregnant abdominal pain contractions premature labor',preg_water:'pregnant leaking amniotic fluid premature rupture',preg_fever:'pregnant high fever infection',preg_weakness:'pregnant extreme weakness anemia',preg_breathing:'pregnant difficulty breathing respiratory',preg_other:'pregnant general complaint'};
+    const sevText={mild:'mild symptoms.',moderate:'moderate discomfort.',severe:'severe pain.',critical:'critical condition immediate help.'};
+    const durText={hours:'started few hours ago.',days:'present 2-3 days.',week:'about a week.',long:'more than a week.'};
+    let symptomText=`Patient reports ${probText[collectedData.problem]||probText.other}. ${sevText[collectedData.severity]||''} ${durText[collectedData.duration]||''}`;
+
+    const prob=collectedData.problem||'other';
+    const fuDef=FOLLOWUPS.en[prob]||FOLLOWUPS.en.other;
+    if(collectedData.followup1==='yes'){
+        const fuTexts={stomach:'Patient has vomiting and nausea.',chest:'Pain radiates to arm jaw or back. Possible cardiac event.',head:'Vision changes or neck stiffness present. Rule out meningitis.',fever:'Patient also has cough and cold symptoms.',breathing:'Wheezing sounds present. Possible asthma or bronchospasm.',injury:'Active bleeding present.',other:'Patient has fever.'};
+        symptomText+=' '+(fuTexts[prob]||fuTexts.other);
+    }
+    if(collectedData.followup2==='yes'){
+        const fuTexts2={stomach:'Blood in vomit or stool reported. Possible GI bleed.',chest:'Patient sweating profusely and nauseous. Suspected MI.',head:'Worst headache of life. Rule out subarachnoid hemorrhage.',fever:'Skin rash and joint pain present. Possible dengue or viral.',breathing:'Chest pain with breathing difficulty. Possible pulmonary embolism.',injury:'Cannot move injured body part. Possible fracture.',other:'Difficulty breathing reported.'};
+        symptomText+=' '+(fuTexts2[prob]||fuTexts2.other);
+    }
+    if(collectedData.extra)symptomText+=' '+collectedData.extra;
+    const vitBase={stomach:{hr:85,temp:37.5,rr:18,spo2:96,sbp:115,dbp:75},chest:{hr:110,temp:37,rr:22,spo2:93,sbp:140,dbp:90},head:{hr:80,temp:37.2,rr:16,spo2:97,sbp:130,dbp:85},fever:{hr:95,temp:38.8,rr:20,spo2:96,sbp:110,dbp:70},breathing:{hr:105,temp:37.5,rr:28,spo2:89,sbp:100,dbp:65},injury:{hr:90,temp:37,rr:18,spo2:97,sbp:120,dbp:78},other:{hr:78,temp:37,rr:16,spo2:97,sbp:120,dbp:80},preg_bleeding:{hr:100,temp:37,rr:20,spo2:96,sbp:100,dbp:65},preg_headache:{hr:90,temp:37.2,rr:18,spo2:97,sbp:160,dbp:100},preg_nausea:{hr:95,temp:37,rr:18,spo2:97,sbp:110,dbp:70},preg_movement:{hr:80,temp:37,rr:16,spo2:97,sbp:120,dbp:78},preg_pain:{hr:95,temp:37.2,rr:20,spo2:96,sbp:115,dbp:75},preg_water:{hr:90,temp:37,rr:18,spo2:97,sbp:115,dbp:75},preg_fever:{hr:100,temp:39,rr:22,spo2:95,sbp:110,dbp:70},preg_weakness:{hr:105,temp:37,rr:20,spo2:94,sbp:90,dbp:55},preg_breathing:{hr:110,temp:37.3,rr:28,spo2:90,sbp:105,dbp:65},preg_other:{hr:85,temp:37,rr:16,spo2:97,sbp:120,dbp:78}};
+    const base=vitBase[collectedData.problem]||vitBase.other;
+    const mult={mild:0.8,moderate:1,severe:1.3,critical:1.5}[collectedData.severity]||1;
+    const hasFever=collectedData.problem==='fever'||(prob==='other'&&collectedData.followup1==='yes');
+    const hasBreathing=collectedData.problem==='breathing'||(prob==='other'&&collectedData.followup2==='yes');
+    const data={age,gender:collectedData.gender||'F',weight_kg:age<12?25:65,heart_rate:Math.round(base.hr*mult),spo2:Math.round(base.spo2/mult),bp_systolic:Math.round(base.sbp*(mult>1.2?0.85:1)),bp_diastolic:base.dbp,temperature:parseFloat((base.temp*(hasFever?1.05:1)).toFixed(1)),respiratory_rate:Math.round(base.rr*mult*(hasBreathing?1.2:1)),blood_glucose:100,pain_score:pain,consciousness:collectedData.severity==='critical'?'Pain':'Alert',symptoms:symptomText,is_pregnant:collectedData.isPregnant?1:0,has_diabetes:collectedData.history==='diabetes'?1:0,has_hypertension:collectedData.history==='bp'?1:0,has_heart_disease:collectedData.history==='heart'?1:0,has_asthma_copd:collectedData.history==='asthma'?1:0};
+    try{const res=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const result=await res.json();hideTyping();lastResult={...result,patientData:data,collectedData:{...collectedData}};showResult(result);}
+    catch(e){hideTyping();addBot(currentLang==='hi'?'&#2360;&#2352;&#2381;&#2357;&#2352; &#2360;&#2375; &#2325;&#2344;&#2375;&#2325;&#2381;&#2335; &#2344;&#2361;&#2368;&#2306; &#2361;&#2379; &#2346;&#2366;&#2351;&#2366;&#2404;':currentLang==='ta'?'&#2970;&#3015;&#2997;&#3016;&#2991;&#2965;&#2980;&#3021;&#2980;&#3009;&#2975;&#2985;&#3021; &#2951;&#2979;&#3016;&#2965;&#3021;&#2965; &#2990;&#3009;&#2975;&#3007;&#2991;&#2997;&#3007;&#2994;&#3021;&#2994;&#3016;.':'Could not connect to server.');}
+}
+
+// =====================================================
+// SHOW RESULT
+// =====================================================
+function showResult(r){
+    const c=document.getElementById('chatArea');
+    const uc=r.urgency_code!==undefined?r.urgency_code:r.urgency==='Emergency'?3:r.urgency==='Urgent'?2:r.urgency==='Semi-Urgent'?1:0;
+    const action=ACTIONS[currentLang][uc]||ACTIONS.en[uc];
+
+    const introTexts={
+        en:["Based on everything you've told me, here's what I think:"],
+        hi:["&#2310;&#2346;&#2344;&#2375; &#2332;&#2379; &#2348;&#2340;&#2366;&#2351;&#2366; &#2313;&#2360;&#2325;&#2375; &#2310;&#2343;&#2366;&#2352; &#2346;&#2352;, &#2350;&#2375;&#2352;&#2366; &#2310;&#2325;&#2354;&#2344; &#2351;&#2375; &#2361;&#2376;:"],
+        ta:["&#2953;&#2969;&#3021;&#2965;&#2995;&#3021; &#2949;&#2993;&#3007;&#2965;&#3009;&#2993;&#3007;&#2965;&#2995;&#3016; &#2965;&#2997;&#2985;&#2990;&#3006;&#2965; &#2986;&#2965;&#3009;&#2986;&#3021;&#2986;&#3006;&#2991;&#3021;&#2997;&#3009; &#2970;&#3014;&#2991;&#3021;&#2980;&#3015;&#2985;&#3021;:"]
+    };
+
+    const prob=collectedData.problem||'other';
+    const baseProb=prob.startsWith('preg_')?'other':prob;
+    const fa=FIRST_AID[currentLang]?FIRST_AID[currentLang][baseProb]:null;
+
+    let firstAidHTML='';
+    if(fa){
+        const doLabel=currentLang==='hi'?'यह करें':currentLang==='ta'?'செய்ய வேண்டியவை':'Do this NOW';
+        const dontLabel=currentLang==='hi'?'यह न करें':currentLang==='ta'?'செய்யக்கூடாதவை':'Do NOT do this';
+        const watchLabel=currentLang==='hi'?'तुरंत अस्पताल जाएं अगर':currentLang==='ta'?'உடனடியாக மருத்துவமனைக்கு செல்லுங்கள்':'Rush to hospital if';
+        firstAidHTML=`
+            <div class="advice-box advice-do"><strong>${doLabel}:</strong><br>${fa.do}</div>
+            <div class="advice-box advice-dont"><strong>${dontLabel}:</strong><br>${fa.dont}</div>
+            <div class="advice-box advice-watch"><strong>${watchLabel}:</strong><br>${fa.watch}</div>`;
+    }
+
+    let pregHTML='';
+    if(collectedData.pregProblem && PREG_ADVICE[currentLang] && PREG_ADVICE[currentLang][collectedData.pregProblem]){
+        const pregLabel=currentLang==='hi'?'गर्भावस्था सलाह':currentLang==='ta'?'கர்ப்ப ஆலோசனை':'Pregnancy advice';
+        pregHTML=`<div class="advice-box advice-preg"><strong>${pregLabel}:</strong><br>${PREG_ADVICE[currentLang][collectedData.pregProblem]}</div>`;
+    }
+
+    let flagsHTML='';
+    if(r.red_flags&&r.red_flags.length>0){
+        flagsHTML=`<div class="result-section" style="background:#FDF2F2;border-color:#F0CACA"><h3 style="color:#B91C1C">Warning Signs</h3>${r.red_flags.map(f=>`<div class="flag-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${f.message}</div>`).join('')}</div>`;
+    }
+
+    const restartLabel=currentLang==='hi'?'नई जाँच':currentLang==='ta'?'புதிய மதிப்பீடு':'New Assessment';
+    const pdfLabel=currentLang==='hi'?'रिपोर्ट':currentLang==='ta'?'அறிக்கை':'Download Report';
+
+    const html=`<div class="result-card">
+        <div style="text-align:center"><div class="result-badge" style="background:${r.risk_color}">${r.risk_level}</div></div>
+        <div style="text-align:center;margin-top:4px"><div class="result-badge" style="background:${r.urgency_color};font-size:13px">${r.urgency}</div></div>
+        <div class="result-section"><h3>${currentLang==='hi'?'संभावित बीमारी':currentLang==='ta'?'சாத்தியமான நிலை':'Possible Condition'}</h3><p>${r.disease} (${r.disease_confidence.toFixed(0)}%)</p></div>
+        <div class="advice-box advice-action"><strong>${currentLang==='hi'?'सलाह':currentLang==='ta'?'அறிவுரை':'Recommendation'}:</strong><br>${action}</div>
+        ${pregHTML}${firstAidHTML}${flagsHTML}
+        <div class="btn-row">
+            <button class="result-btn btn-restart" onclick="restartChat()">${restartLabel}</button>
+            <button class="result-btn btn-pdf" onclick="downloadPDF()">${pdfLabel}</button>
+        </div>
+    </div>`;
+
+    const d=document.createElement('div');d.className='msg bot';
+    d.innerHTML=`<div class="avatar">${AVATAR_SVG}</div><div><div class="bubble" style="max-width:100%;padding:4px">${html}</div></div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+// =====================================================
+// REPORT GENERATION (HTML-based, supports all languages)
+// =====================================================
+function downloadPDF(){
+    if(!lastResult)return;
+    const c=document.getElementById('chatArea');
+    const d=document.createElement('div');d.className='msg bot';d.id='langPicker';
+    const askLang=currentLang==='hi'?'रिपोर्ट किस भाषा में चाहिए?':currentLang==='ta'?'அறிக்கை எந்த மொழியில் வேண்டும்?':'Which language do you want the report in?';
+    d.innerHTML=`<div class="avatar">${AVATAR_SVG}</div><div><div class="bubble">${askLang}<div class="options" style="margin-top:10px">
+        <button class="opt-btn" onclick="generateReport('en')">English</button>
+        <button class="opt-btn" onclick="generateReport('hi')">हिंदी</button>
+        <button class="opt-btn" onclick="generateReport('ta')">தமிழ்</button>
+    </div></div></div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function generateReport(lang){
+    const picker=document.getElementById('langPicker');if(picker)picker.remove();
+    addUser(lang==='hi'?'हिंदी':lang==='ta'?'தமிழ்':'English');
+    addBot(currentLang==='hi'?'रिपोर्ट तैयार हो रही है...':currentLang==='ta'?'அறிக்கை தயாராகிறது...':'Generating your report...',null,false);
+
+    const r=lastResult;
+    const uc=r.urgency_code||0;
+    const pd=r.patientData||{};
+    const today=new Date();
+    const dateStr=today.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+    const timeStr=today.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const refNo='DYA-'+Date.now().toString().slice(-6);
+    const pName=collectedData.patientName||'Unknown';
+    const pAge=pd.age||collectedData.exactAge||'N/A';
+    const pGender=(pd.gender==='M'||pd.gender===1);
+    const prob=collectedData.problem||'other';
+
+    const T={
+    en:{title:'Clinical Referral Note',subtitle:'AI-Enabled Health Assessment Report',inst:'SRM Institute of Science and Technology, Kattankulathur',ref:'Ref',date:'Date',time:'Time',patient:'Patient Information',name:'Name',age:'Age',gender:'Gender',category:'Category',visit:'Date of Visit',male:'Male',female:'Female',who:{self:'Adult',child:'Child',elderly:'Elderly',pregnant:'Pregnant Woman'},rx:'Rx',clinicalSummary:'Clinical Summary',assessment:'AI Assessment',risk:'Risk Level',urgency:'Urgency Level',suspected:'Suspected Condition',confidence:'confidence',action:'Immediate Action Required',pregAdvice:'Pregnancy Advisory',warnings:'Warning Signs Detected',stampTitle:'AI VERIFIED',stampName:'DIYA',stampSub:'Triage AI System',referNote:'This patient was assessed using the Diya AI Triage System and is being referred for further clinical evaluation and management.',disclaimer:'IMPORTANT DISCLAIMER',discText1:'This is an AI-generated preliminary assessment. It does NOT replace professional medical diagnosis.',discText2:'Please consult a qualified healthcare professional for proper diagnosis and treatment.',footer:'Diya - Triage AI | Sarthak Gupta & Dhruv | Guide: Dr R. Madhura',problemDesc:{stomach:'abdominal pain and stomach discomfort',chest:'chest pain and tightness in the chest region',head:'headache and dizziness',fever:'high fever with body aches and general weakness',breathing:'difficulty breathing and shortness of breath',injury:'an injury with associated pain',other:'general unwellness',preg_bleeding:'vaginal bleeding during pregnancy',preg_headache:'severe headache with swelling during pregnancy, raising concern for preeclampsia',preg_nausea:'severe and persistent vomiting during pregnancy',preg_movement:'reduced fetal movement',preg_pain:'abdominal pain and possible contractions during pregnancy',preg_water:'leaking of amniotic fluid before the expected due date',preg_fever:'fever during pregnancy which poses risk to the baby',preg_weakness:'extreme weakness and dizziness during pregnancy, possibly indicating severe anemia',preg_breathing:'difficulty breathing during pregnancy requiring urgent evaluation',preg_other:'pregnancy-related concerns'},sevDesc:{mild:'mild',moderate:'moderate',severe:'severe',critical:'critical and requiring immediate attention'},durDesc:{hours:'a few hours ago (today)',days:'approximately 2 to 3 days ago',week:'about one week ago',long:'more than one week ago'},fu1:{stomach:'The patient reports associated vomiting and nausea.',chest:'The pain radiates to the arm, jaw, or back.',head:'The patient reports vision changes and/or neck stiffness.',fever:'The patient also presents with cough and cold symptoms.',breathing:'Wheezing sounds are heard during breathing.',injury:'There is active bleeding from the injury site.',other:'The patient also reports fever.'},fu2:{stomach:'The patient has noticed blood in their vomit or stool.',chest:'The patient is sweating profusely and feeling nauseous.',head:'The patient describes this as the worst headache they have ever experienced.',fever:'Skin rash and joint pain are also present.',breathing:'The patient also reports chest pain and tightness.',injury:'The patient is unable to move the injured body part.',other:'The patient also has difficulty breathing.'},histDesc:{diabetes:'diabetes mellitus',bp:'hypertension',heart:'known heart disease',asthma:'asthma/COPD'},noHistory:'No significant past medical history reported.',actions:ACTIONS.en,},
+    hi:{title:'क्लिनिकल रेफरल नोट',subtitle:'AI-सक्षम स्वास्थ्य मूल्यांकन रिपोर्ट',inst:'एसआरएम इंस्टीट्यूट ऑफ साइंस एंड टेक्नोलॉजी, कट्टनकुलत्तूर',ref:'संदर्भ',date:'तिथि',time:'समय',patient:'मरीज़ की जानकारी',name:'नाम',age:'उम्र',gender:'लिंग',category:'श्रेणी',visit:'जाँच की तिथि',male:'पुरुष',female:'महिला',who:{self:'वयस्क',child:'बच्चा',elderly:'बुज़ुर्ग',pregnant:'गर्भवती महिला'},rx:'Rx',clinicalSummary:'क्लिनिकल सारांश',assessment:'AI मूल्यांकन',risk:'ख़तरे का स्तर',urgency:'आपातकालीन स्तर',suspected:'संभावित बीमारी',confidence:'विश्वसनीयता',action:'तुरंत कार्रवाई आवश्यक',pregAdvice:'गर्भावस्था सलाह',warnings:'चेतावनी के संकेत',stampTitle:'AI प्रमाणित',stampName:'दीया',stampSub:'ट्राइएज AI सिस्टम',referNote:'इस मरीज़ का दीया AI ट्राइएज सिस्टम द्वारा मूल्यांकन किया गया है और आगे की जाँच के लिए भेजा जा रहा है।',disclaimer:'महत्वपूर्ण सूचना',discText1:'यह AI द्वारा तैयार प्रारंभिक मूल्यांकन है। यह पेशेवर चिकित्सा निदान का विकल्प नहीं है।',discText2:'कृपया उचित निदान और उपचार के लिए किसी योग्य चिकित्सक से परामर्श करें।',footer:'दीया - ट्राइएज AI | सार्थक गुप्ता और ध्रुव | गाइड: डॉ. आर. मधुरा',problemDesc:{stomach:'पेट दर्द और पेट में तकलीफ़',chest:'सीने में दर्द और जकड़न',head:'सिरदर्द और चक्कर',fever:'तेज़ बुखार, बदन दर्द और कमज़ोरी',breathing:'साँस लेने में तकलीफ़',injury:'चोट और उससे जुड़ा दर्द',other:'सामान्य अस्वस्थता',preg_bleeding:'गर्भावस्था में योनि से रक्तस्राव',preg_headache:'गर्भावस्था में तेज़ सिरदर्द और सूजन',preg_nausea:'गर्भावस्था में लगातार तेज़ उल्टी',preg_movement:'बच्चे की हरकत कम होना',preg_pain:'गर्भावस्था में पेट दर्द और संभावित संकुचन',preg_water:'नियत तिथि से पहले एमनियोटिक द्रव का रिसाव',preg_fever:'गर्भावस्था में बुखार',preg_weakness:'गर्भावस्था में अत्यधिक कमज़ोरी',preg_breathing:'गर्भावस्था में साँस की तकलीफ़',preg_other:'गर्भावस्था संबंधी समस्या'},sevDesc:{mild:'हल्की',moderate:'मध्यम',severe:'तेज़',critical:'अत्यंत गंभीर'},durDesc:{hours:'कुछ घंटे पहले (आज)',days:'लगभग 2 से 3 दिन पहले',week:'लगभग एक हफ़्ते पहले',long:'एक हफ़्ते से अधिक पहले'},fu1:{stomach:'मरीज़ को उल्टी और जी मिचलाना भी है।',chest:'दर्द बाँह, जबड़े या पीठ तक फैल रहा है।',head:'मरीज़ को नज़र में बदलाव और/या गर्दन में अकड़न है।',fever:'मरीज़ को खांसी और ज़ुकाम भी है।',breathing:'साँस लेते समय सीटी जैसी आवाज़ आ रही है।',injury:'चोट की जगह से सक्रिय रूप से खून बह रहा है।',other:'मरीज़ को बुखार भी है।'},fu2:{stomach:'मरीज़ ने उल्टी या मल में खून देखा है।',chest:'मरीज़ को बहुत पसीना आ रहा है और जी मिचला रहा है।',head:'मरीज़ का कहना है कि यह उनकी ज़िंदगी का सबसे तेज़ सिरदर्द है।',fever:'त्वचा पर दाने और जोड़ों में दर्द भी है।',breathing:'मरीज़ को साँस की तकलीफ़ के साथ सीने में दर्द भी है।',injury:'मरीज़ चोट वाले अंग को हिला नहीं पा रहा।',other:'मरीज़ को साँस लेने में तकलीफ़ भी है।'},histDesc:{diabetes:'मधुमेह (शुगर)',bp:'उच्च रक्तचाप (बीपी)',heart:'हृदय रोग',asthma:'दमा/सीओपीडी'},noHistory:'कोई उल्लेखनीय पुरानी बीमारी नहीं बताई गई।',actions:ACTIONS.hi,},
+    ta:{title:'மருத்துவ பரிந்துரை குறிப்பு',subtitle:'AI-இயக்கப்படும் உடல்நல மதிப்பீட்டு அறிக்கை',inst:'SRM அறிவியல் மற்றும் தொழில்நுட்ப நிறுவனம், கட்டன்குளத்தூர்',ref:'குறிப்பு எண்',date:'தேதி',time:'நேரம்',patient:'நோயாளி தகவல்',name:'பெயர்',age:'வயது',gender:'பாலினம்',category:'வகை',visit:'வருகை தேதி',male:'ஆண்',female:'பெண்',who:{self:'பெரியவர்',child:'குழந்தை',elderly:'முதியவர்',pregnant:'கர்ப்பிணி'},rx:'Rx',clinicalSummary:'மருத்துவ சுருக்கம்',assessment:'AI மதிப்பீடு',risk:'ஆபத்து நிலை',urgency:'அவசர நிலை',suspected:'சாத்தியமான நிலை',confidence:'நம்பகத்தன்மை',action:'உடனடி நடவடிக்கை தேவை',pregAdvice:'கர்ப்ப ஆலோசனை',warnings:'எச்சரிக்கை அறிகுறிகள்',stampTitle:'AI சரிபார்க்கப்பட்டது',stampName:'தீயா',stampSub:'ட்ரையேஜ் AI அமைப்பு',referNote:'இந்த நோயாளி தீயா AI ட்ரையேஜ் அமைப்பால் மதிப்பிடப்பட்டு மேலதிக மருத்துவ மதிப்பீட்டுக்காக அனுப்பப்படுகிறார்.',disclaimer:'முக்கிய அறிவிப்பு',discText1:'இது AI ஆல் உருவாக்கப்பட்ட ஆரம்ப மதிப்பீடு. இது தொழில்முறை மருத்துவ நோயறிதலுக்கு மாற்றாகாது.',discText2:'சரியான நோயறிதல் மற்றும் சிகிச்சைக்கு தகுதிவாய்ந்த மருத்துவரை அணுகவும்.',footer:'தீயா - ட்ரையேஜ் AI | சார்த்தக் குப்தா & த்ருவ் | வழிகாட்டி: டாக்டர் ஆர். மதுரா',problemDesc:{stomach:'வயிற்று வலி மற்றும் அசௌகரியம்',chest:'நெஞ்சு வலி மற்றும் இறுக்கம்',head:'தலைவலி மற்றும் மயக்கம்',fever:'அதிக காய்ச்சல், உடல் வலி மற்றும் பலவீனம்',breathing:'மூச்சு விடுவதில் சிரமம்',injury:'காயம் மற்றும் தொடர்புடைய வலி',other:'பொது உடல்நலக்குறைவு',preg_bleeding:'கர்ப்ப காலத்தில் இரத்தப்போக்கு',preg_headache:'கர்ப்ப காலத்தில் கடுமையான தலைவலி மற்றும் வீக்கம்',preg_nausea:'கர்ப்ப காலத்தில் தொடர்ச்சியான கடுமையான வாந்தி',preg_movement:'குழந்தையின் அசைவு குறைவு',preg_pain:'கர்ப்ப காலத்தில் வயிற்று வலி மற்றும் சுருக்கம்',preg_water:'நிர்ணயிக்கப்பட்ட தேதிக்கு முன் பனிக்குட நீர் கசிவு',preg_fever:'கர்ப்ப காலத்தில் காய்ச்சல்',preg_weakness:'கர்ப்ப காலத்தில் மிகுந்த பலவீனம்',preg_breathing:'கர்ப்ப காலத்தில் மூச்சு சிரமம்',preg_other:'கர்ப்பம் தொடர்பான பிரச்சனைகள்'},sevDesc:{mild:'லேசான',moderate:'மிதமான',severe:'கடுமையான',critical:'மிக கடுமையான'},durDesc:{hours:'சில மணி நேரங்களுக்கு முன் (இன்று)',days:'சுமார் 2 முதல் 3 நாட்களுக்கு முன்',week:'சுமார் ஒரு வாரத்திற்கு முன்',long:'ஒரு வாரத்திற்கும் மேலாக'},fu1:{stomach:'நோயாளிக்கு வாந்தி மற்றும் குமட்டல் இருக்கிறது.',chest:'வலி கை, தாடை அல்லது முதுகுக்கு பரவுகிறது.',head:'பார்வை மாற்றங்கள் மற்றும் கழுத்து விறைப்பு உள்ளது.',fever:'இருமல் மற்றும் சளி அறிகுறிகளும் உள்ளன.',breathing:'மூச்சு விடும்போது விசில் சத்தம் வருகிறது.',injury:'காயத்திலிருந்து இரத்தம் வருகிறது.',other:'நோயாளிக்கு காய்ச்சலும் உள்ளது.'},fu2:{stomach:'வாந்தி அல்லது மலத்தில் இரத்தம் காணப்படுகிறது.',chest:'நோயாளி அதிகமாக வியர்க்கிறார், குமட்டல் உள்ளது.',head:'இதுவரை வந்ததிலேயே மிக கடுமையான தலைவலி என நோயாளி தெரிவிக்கிறார்.',fever:'தோல் தடிப்பு மற்றும் மூட்டு வலியும் உள்ளது.',breathing:'மூச்சு சிரமத்துடன் நெஞ்சு வலியும் உள்ளது.',injury:'காயமடைந்த பகுதியை அசைக்க இயலவில்லை.',other:'மூச்சு விடுவதில் சிரமமும் உள்ளது.'},histDesc:{diabetes:'சர்க்கரை நோய்',bp:'உயர் இரத்த அழுத்தம்',heart:'இதய நோய்',asthma:'ஆஸ்துமா/COPD'},noHistory:'குறிப்பிடத்தக்க பழைய நோய் வரலாறு எதுவும் தெரிவிக்கப்படவில்லை.',actions:ACTIONS.ta,}
+    };
+
+    const t=T[lang]||T.en;
+    const genderStr=pGender?t.male:t.female;
+    const whoStr=t.who[collectedData.who]||(collectedData.isPregnant?t.who.pregnant:t.who.self);
+
+    let narrative=`${pName}, `;
+    if(lang==='hi') narrative+=`${pAge} वर्षीय ${genderStr} (${whoStr}), ${t.problemDesc[prob]||t.problemDesc.other} की शिकायत लेकर आए हैं।`;
+    else if(lang==='ta') narrative+=`${pAge} வயது ${genderStr} (${whoStr}), ${t.problemDesc[prob]||t.problemDesc.other} என்ற பிரச்சனையுடன் வந்துள்ளார்.`;
+    else narrative+=`a ${pAge}-year-old ${genderStr.toLowerCase()} (${whoStr}), presents with ${t.problemDesc[prob]||t.problemDesc.other}.`;
+
+    if(lang==='hi') narrative+=` तकलीफ़ ${t.sevDesc[collectedData.severity]||'मध्यम'} है और ${t.durDesc[collectedData.duration]||'हाल ही में'} शुरू हुई।`;
+    else if(lang==='ta') narrative+=` அறிகுறிகள் ${t.sevDesc[collectedData.severity]||'மிதமான'} தீவிரமானவை, ${t.durDesc[collectedData.duration]||'சமீபத்தில்'} தொடங்கின.`;
+    else narrative+=` The symptoms are ${t.sevDesc[collectedData.severity]||'moderate'} in intensity and started ${t.durDesc[collectedData.duration]||'recently'}.`;
+
+    if(collectedData.followup1==='yes'&&t.fu1[prob]) narrative+=' '+t.fu1[prob];
+    if(collectedData.followup2==='yes'&&t.fu2[prob]) narrative+=' '+t.fu2[prob];
+    if(collectedData.extra) narrative+=` ${lang==='hi'?'अतिरिक्त जानकारी':lang==='ta'?'கூடுதல் தகவல்':'Additional information'}: "${collectedData.extra}"`;
+
+    if(collectedData.history&&collectedData.history!=='none'){
+        narrative+=` ${lang==='hi'?'पुरानी बीमारी':lang==='ta'?'பழைய நோய் வரலாறு':'Medical history'}: ${t.histDesc[collectedData.history]||collectedData.history}.`;
+    } else { narrative+=' '+t.noHistory; }
+
+    const action=t.actions[uc]||t.actions[0];
+    const pregText=(collectedData.pregProblem&&PREG_ADVICE[lang])?PREG_ADVICE[lang][collectedData.pregProblem]:'';
+    const flagText=(r.red_flags&&r.red_flags.length>0)?r.red_flags.map(f=>f.message).join('. ')+'.':'';
+
+    const riskBg={Low:'#3D9E6E',Moderate:'#D4A843',High:'#C67A30',Critical:'#B91C1C'}[r.risk_level]||'#888';
+    const urgBg={'Non-Urgent':'#3D9E6E','Semi-Urgent':'#388CB4','Urgent':'#D4A843','Emergency':'#B91C1C'}[r.urgency]||'#888';
+
+    const w=window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Diya Report - ${pName}</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @media print{@page{margin:15mm 12mm;size:A4}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans','Segoe UI',Tahoma,sans-serif;color:#1A2332;font-size:11pt;line-height:1.6;padding:0}
+        .header{background:#0F2D4A;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
+        .header-left h1{font-size:20pt;font-weight:700;letter-spacing:-0.5px}
+        .header-left p{font-size:8.5pt;opacity:0.6;margin-top:2px}
+        .header-right{text-align:right;font-size:8.5pt;opacity:0.8}
+        .patient-bar{background:#F3F5F7;padding:12px 28px;display:flex;justify-content:space-between;border-bottom:2px solid #0F2D4A}
+        .patient-bar .item{font-size:9.5pt;color:#4A5D73}
+        .patient-bar .item b{color:#0F2D4A}
+        .content{padding:20px 28px}
+        .rx{font-size:28pt;font-weight:700;color:#0F2D4A;font-family:serif;margin-bottom:4px}
+        .rx-line{border-top:2px solid #0F2D4A;margin-bottom:16px}
+        .section-title{font-size:10pt;font-weight:700;color:#0F2D4A;text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #DEE3EA}
+        .narrative{font-size:10.5pt;color:#333;line-height:1.7;text-align:justify;margin-bottom:12px}
+        .badge-row{display:flex;gap:12px;margin:10px 0}
+        .badge{display:inline-block;padding:8px 24px;border-radius:4px;color:#fff;font-weight:700;font-size:11pt;text-align:center}
+        .badge-label{font-size:8pt;color:#8696A7;text-transform:uppercase;margin-top:4px;text-align:center;letter-spacing:0.5px}
+        .suspected{font-size:10.5pt;margin:8px 0}
+        .suspected b{color:#0F2D4A}
+        .advice-box{border-radius:4px;padding:12px 16px;margin:10px 0;font-size:10pt;line-height:1.6}
+        .advice-action{background:#FDF6E7;border-left:3px solid #D4A843;color:#6B4E0A}
+        .advice-preg{background:#F6F0FA;border-left:3px solid #7C3AED;color:#4C1D95}
+        .advice-warn{background:#FDF2F2;border-left:3px solid #B91C1C;color:#7F1D1D}
+        .bottom-section{display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;padding-top:12px;border-top:1px solid #DEE3EA}
+        .refer-note{font-size:8.5pt;color:#8696A7;font-style:italic;max-width:55%;line-height:1.5}
+        .stamp{border:2px solid #0F2D4A;border-radius:4px;padding:10px 20px;text-align:center}
+        .stamp-title{font-size:7pt;color:#0F2D4A;font-weight:700;letter-spacing:2px}
+        .stamp-name{font-size:16pt;font-weight:700;color:#0F2D4A;margin:2px 0}
+        .stamp-sub{font-size:7pt;color:#8696A7}
+        .disclaimer{background:#B91C1C;color:#fff;padding:12px 20px;border-radius:4px;margin-top:20px;text-align:center}
+        .disclaimer h3{font-size:9pt;letter-spacing:1px;margin-bottom:4px}
+        .disclaimer p{font-size:8pt;line-height:1.5}
+        .footer{text-align:center;font-size:7.5pt;color:#8696A7;margin-top:12px;padding-bottom:8px}
+        .print-btn{display:block;margin:20px auto;padding:12px 40px;background:#0F2D4A;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+        @media print{.print-btn{display:none !important}}
+    </style></head><body>
+    <button class="print-btn" onclick="window.print()">${lang==='hi'?'प्रिंट / PDF सेव करें':lang==='ta'?'அச்சிடு / PDF சேமி':'Print / Save as PDF'}</button>
+
+    <div class="header">
+        <div class="header-left">
+            <h1>${lang==='hi'?'दीया':lang==='ta'?'தீயா':'Diya'} &mdash; Triage AI</h1>
+            <p>${t.subtitle} | ${t.inst}</p>
+        </div>
+        <div class="header-right">
+            ${t.ref}: ${refNo}<br>${t.date}: ${dateStr}<br>${t.time}: ${timeStr}
+        </div>
+    </div>
+
+    <div class="patient-bar">
+        <div class="item"><b>${t.name}:</b> ${pName}</div>
+        <div class="item"><b>${t.age}:</b> ${pAge} ${lang==='hi'?'वर्ष':lang==='ta'?'வயது':'years'}</div>
+        <div class="item"><b>${t.gender}:</b> ${genderStr}</div>
+        <div class="item"><b>${t.category}:</b> ${whoStr}</div>
+        <div class="item"><b>${t.visit}:</b> ${dateStr}</div>
+    </div>
+
+    <div class="content">
+        <div class="rx">Rx</div>
+        <div class="rx-line"></div>
+
+        <div class="section-title">${t.clinicalSummary}</div>
+        <div class="narrative">${narrative}</div>
+
+        <div class="section-title">${t.assessment}</div>
+        <div class="badge-row">
+            <div><div class="badge" style="background:${riskBg}">${r.risk_level}</div><div class="badge-label">${t.risk}</div></div>
+            <div><div class="badge" style="background:${urgBg}">${r.urgency}</div><div class="badge-label">${t.urgency}</div></div>
+        </div>
+        <div class="suspected"><b>${t.suspected}:</b> ${r.disease} (${r.disease_confidence.toFixed(0)}% ${t.confidence})</div>
+
+        <div class="advice-box advice-action"><b>${t.action}:</b><br>${action}</div>
+
+        ${pregText?`<div class="advice-box advice-preg"><b>${t.pregAdvice}:</b><br>${pregText}</div>`:''}
+        ${flagText?`<div class="advice-box advice-warn"><b>${t.warnings}:</b><br>${flagText}</div>`:''}
+
+        <div class="bottom-section">
+            <div class="refer-note">${t.referNote}</div>
+            <div class="stamp">
+                <div class="stamp-title">${t.stampTitle}</div>
+                <div class="stamp-name">${t.stampName}</div>
+                <div class="stamp-sub">${t.stampSub}<br>${refNo} | ${dateStr}</div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <h3>${t.disclaimer}</h3>
+            <p>${t.discText1}<br>${t.discText2}</p>
+        </div>
+
+        <div class="footer">${t.footer}</div>
+    </div>
+    </body></html>`);
+    w.document.close();
+}
+
+// INIT
+L=EMPATHY.en;O=OPTS.en;
+window.onload=()=>restartChat();
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+{
+  "Cardiac": [
+    {
+      "word": "chest",
+      "weight": 3.0903333251185274
+    },
+    {
+      "word": "fainting",
+      "weight": 3.024631861224861
+    },
+    {
+      "word": "palpitations",
+      "weight": 2.554211665601658
+    },
+    {
+      "word": "dizziness",
+      "weight": 2.2907872142786454
+    },
+    {
+      "word": "chest pain",
+      "weight": 2.1436222293368496
+    },
+    {
+      "word": "cardiac",
+      "weight": 1.945695821453326
+    },
+    {
+      "word": "sweating",
+      "weight": 1.9293090612664894
+    },
+    {
+      "word": "associated",
+      "weight": 1.9213557114587734
+    }
+  ],
+  "Gastrointestinal": [
+    {
+      "word": "abdomen",
+      "weight": 3.222679088899833
+    },
+    {
+      "word": "abdominal",
+      "weight": 2.9664563919159943
+    },
+    {
+      "word": "vomiting",
+      "weight": 2.527493887576765
+    },
+    {
+      "word": "diarrhea",
+      "weight": 2.3599864307528025
+    },
+    {
+      "word": "dehydration",
+      "weight": 1.988708120084732
+    },
+    {
+      "word": "nausea",
+      "weight": 1.9697393884891516
+    },
+    {
+      "word": "tenderness",
+      "weight": 1.9533870033471417
+    },
+    {
+      "word": "blood",
+      "weight": 1.9332247364647326
+    }
+  ],
+  "General": [
+    {
+      "word": "weakness",
+      "weight": 2.4381125060311066
+    },
+    {
+      "word": "malaise",
+      "weight": 2.133092910017179
+    },
+    {
+      "word": "body pain",
+      "weight": 2.081997209181685
+    },
+    {
+      "word": "weight loss",
+      "weight": 2.0717755039606938
+    },
+    {
+      "word": "symptoms",
+      "weight": 1.9898575816138104
+    },
+    {
+      "word": "loss",
+      "weight": 1.9826129672618535
+    },
+    {
+      "word": "appetite",
+      "weight": 1.721454543569476
+    },
+    {
+      "word": "weight",
+      "weight": 1.683446016945148
+    }
+  ],
+  "Infectious": [
+    {
+      "word": "rash",
+      "weight": 3.8515781248115797
+    },
+    {
+      "word": "fever",
+      "weight": 3.531066220050299
+    },
+    {
+      "word": "chills",
+      "weight": 2.6224139701582376
+    },
+    {
+      "word": "body aches",
+      "weight": 2.074274964368554
+    },
+    {
+      "word": "aches",
+      "weight": 2.074274964368554
+    },
+    {
+      "word": "infection",
+      "weight": 2.0187457541952307
+    },
+    {
+      "word": "high",
+      "weight": 1.8386564795854066
+    },
+    {
+      "word": "sweats",
+      "weight": 1.730480228701924
+    }
+  ],
+  "Metabolic": [
+    {
+      "word": "blood sugar",
+      "weight": 2.9812084220925117
+    },
+    {
+      "word": "sugar",
+      "weight": 2.9812084220925117
+    },
+    {
+      "word": "glucose",
+      "weight": 2.6222679321088904
+    },
+    {
+      "word": "thirst",
+      "weight": 2.5974720430800327
+    },
+    {
+      "word": "urination",
+      "weight": 2.5610418202099976
+    },
+    {
+      "word": "blurred vision",
+      "weight": 2.4021804921581893
+    },
+    {
+      "word": "blurred",
+      "weight": 2.180861950619312
+    },
+    {
+      "word": "diabetic",
+      "weight": 2.0475310530795854
+    }
+  ],
+  "Neurological": [
+    {
+      "word": "vision",
+      "weight": 2.92707548686904
+    },
+    {
+      "word": "speech",
+      "weight": 2.2726676796402714
+    },
+    {
+      "word": "neck",
+      "weight": 2.24926447681289
+    },
+    {
+      "word": "headache",
+      "weight": 2.161164087660359
+    },
+    {
+      "word": "numbness",
+      "weight": 2.1415794497163003
+    },
+    {
+      "word": "seizure",
+      "weight": 2.038378774669297
+    },
+    {
+      "word": "stiffness",
+      "weight": 1.9693148144873427
+    },
+    {
+      "word": "neck stiffness",
+      "weight": 1.9693148144873427
+    }
+  ],
+  "Obstetric": [
+    {
+      "word": "fetal",
+      "weight": 3.6124695140959955
+    },
+    {
+      "word": "vaginal",
+      "weight": 3.0957846263556097
+    },
+    {
+      "word": "pregnant",
+      "weight": 2.6973595469884852
+    },
+    {
+      "word": "pregnant patient",
+      "weight": 2.6973595469884852
+    },
+    {
+      "word": "vaginal bleeding",
+      "weight": 2.6495320195671397
+    },
+    {
+      "word": "contractions",
+      "weight": 2.596912380751037
+    },
+    {
+      "word": "bleeding",
+      "weight": 2.163097761132261
+    },
+    {
+      "word": "fetal heart",
+      "weight": 1.8728796133073184
+    }
+  ],
+  "Respiratory": [
+    {
+      "word": "breathing",
+      "weight": 3.4266882686536144
+    },
+    {
+      "word": "wheezing",
+      "weight": 2.880244938495125
+    },
+    {
+      "word": "respiratory",
+      "weight": 2.63895363271315
+    },
+    {
+      "word": "cough",
+      "weight": 2.4177324926029917
+    },
+    {
+      "word": "nasal",
+      "weight": 2.1326870106571008
+    },
+    {
+      "word": "chest tightness",
+      "weight": 2.0856763618594782
+    },
+    {
+      "word": "tightness",
+      "weight": 2.0856763618594782
+    },
+    {
+      "word": "difficulty",
+      "weight": 2.032083783255114
+    }
+  ],
+  "Trauma": [
+    {
+      "word": "injury",
+      "weight": 3.441238093461188
+    },
+    {
+      "word": "ago",
+      "weight": 3.3435180257844093
+    },
+    {
+      "word": "wound",
+      "weight": 2.986392513438926
+    },
+    {
+      "word": "fracture",
+      "weight": 2.2324565945919312
+    },
+    {
+      "word": "fall",
+      "weight": 2.1502916945592876
+    },
+    {
+      "word": "bleeding",
+      "weight": 2.144675121954637
+    },
+    {
+      "word": "sustained",
+      "weight": 1.9376590053518157
+    },
+    {
+      "word": "days ago",
+      "weight": 1.9291028643921198
+    }
+  ]
+}

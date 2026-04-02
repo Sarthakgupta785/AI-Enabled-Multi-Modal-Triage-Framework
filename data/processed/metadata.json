@@ -1,0 +1,103 @@
+{
+  "vitals_features": [
+    "age",
+    "gender_encoded",
+    "weight_kg",
+    "is_pregnant",
+    "age_group_encoded",
+    "heart_rate_bpm",
+    "bp_systolic_mmhg",
+    "bp_diastolic_mmhg",
+    "temperature_c",
+    "spo2_percent",
+    "respiratory_rate",
+    "blood_glucose_mg",
+    "pain_score",
+    "consciousness_encoded",
+    "news_score",
+    "map_mmhg",
+    "shock_index",
+    "pulse_pressure",
+    "has_diabetes",
+    "has_hypertension",
+    "has_heart_disease",
+    "has_asthma_copd",
+    "has_immunocompromised",
+    "comorbidity_count",
+    "red_flag_vitals",
+    "red_flag_symptoms",
+    "red_flag_combo",
+    "any_red_flag",
+    "red_flag_count",
+    "time_of_day_encoded",
+    "season_encoded",
+    "nearest_hospital_km",
+    "arrival_mode_encoded",
+    "glucose_was_missing",
+    "pain_was_missing",
+    "chief_complaint_encoded"
+  ],
+  "numerical_cols": [
+    "age",
+    "weight_kg",
+    "heart_rate_bpm",
+    "bp_systolic_mmhg",
+    "bp_diastolic_mmhg",
+    "temperature_c",
+    "spo2_percent",
+    "respiratory_rate",
+    "blood_glucose_mg",
+    "pain_score",
+    "news_score",
+    "map_mmhg",
+    "shock_index",
+    "pulse_pressure",
+    "nearest_hospital_km",
+    "comorbidity_count",
+    "red_flag_count"
+  ],
+  "risk_order": {
+    "Low": 0,
+    "Moderate": 1,
+    "High": 2,
+    "Critical": 3
+  },
+  "urgency_order": {
+    "Non-Urgent": 0,
+    "Semi-Urgent": 1,
+    "Urgent": 2,
+    "Emergency": 3
+  },
+  "age_group_order": {
+    "Neonate": 0,
+    "Infant": 1,
+    "Child": 2,
+    "Adolescent": 3,
+    "Adult": 4,
+    "Elderly": 5
+  },
+  "consciousness_order": {
+    "Alert": 0,
+    "Voice": 1,
+    "Pain": 2,
+    "Unresponsive": 3
+  },
+  "time_order": {
+    "Morning": 0,
+    "Afternoon": 1,
+    "Evening": 2,
+    "Night": 3
+  },
+  "arrival_order": {
+    "Walk-in": 0,
+    "Carried": 1,
+    "Referred": 2,
+    "Ambulance": 3
+  },
+  "train_size": 8000,
+  "val_size": 1000,
+  "test_size": 1000,
+  "num_vitals_features": 36,
+  "glucose_impute_median": 131.0,
+  "pain_impute_median": 3.0
+}

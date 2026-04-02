@@ -1,0 +1,442 @@
+{
+    "_metadata": {
+        "version": "1.0",
+        "authors": "Sarthak Gupta, Dhruv",
+        "description": "Seasonal disease risk database for Indian states based on IDSP surveillance data and epidemiological patterns",
+        "sources": [
+            "IDSP Weekly Outbreak Reports (2018-2024)",
+            "IMD Seasonal Climate Data",
+            "WHO India Disease Surveillance Reports",
+            "NCDC Seasonal Disease Advisories"
+        ],
+        "risk_scale": "0.0 (no seasonal risk) to 1.0 (peak seasonal risk)",
+        "last_updated": "2026-03-30"
+    },
+
+    "seasons": {
+        "summer":       {"months": [3, 4, 5],       "label": "Summer (Mar-May)"},
+        "monsoon":      {"months": [6, 7, 8, 9],    "label": "Monsoon (Jun-Sep)"},
+        "post_monsoon": {"months": [10, 11],         "label": "Post-Monsoon (Oct-Nov)"},
+        "winter":       {"months": [12, 1, 2],       "label": "Winter (Dec-Feb)"}
+    },
+
+    "regional_profiles": {
+        "tamil_nadu": {
+            "label": "Tamil Nadu",
+            "climate_zone": "tropical_wet_dry",
+            "monsoon_type": "northeast_monsoon",
+            "peak_monsoon_months": [10, 11, 12],
+            "diseases": {
+                "dengue": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.15, "2": 0.10, "3": 0.10, "4": 0.15,
+                        "5": 0.20, "6": 0.30, "7": 0.40, "8": 0.45,
+                        "9": 0.55, "10": 0.85, "11": 0.90, "12": 0.60
+                    },
+                    "symptoms": ["fever", "body ache", "joint pain", "rash", "headache", "platelet"],
+                    "alert_threshold": 0.50,
+                    "advisory": "Monitor for fever with body pain. Check platelet count if fever persists >2 days."
+                },
+                "malaria": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.08, "3": 0.10, "4": 0.15,
+                        "5": 0.20, "6": 0.35, "7": 0.45, "8": 0.50,
+                        "9": 0.55, "10": 0.65, "11": 0.55, "12": 0.30
+                    },
+                    "symptoms": ["fever", "chills", "sweat", "rigors", "cyclic fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Cyclic fever pattern with chills — rule out malaria. Rapid test recommended."
+                },
+                "typhoid": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.10, "3": 0.15, "4": 0.20,
+                        "5": 0.25, "6": 0.40, "7": 0.50, "8": 0.55,
+                        "9": 0.50, "10": 0.55, "11": 0.45, "12": 0.25
+                    },
+                    "symptoms": ["fever", "headache", "abdominal pain", "fatigue", "week-long fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Prolonged fever >5 days with abdominal discomfort — consider Widal test."
+                },
+                "cholera": {
+                    "category": "Gastrointestinal",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.08, "4": 0.10,
+                        "5": 0.15, "6": 0.25, "7": 0.35, "8": 0.40,
+                        "9": 0.40, "10": 0.50, "11": 0.45, "12": 0.20
+                    },
+                    "symptoms": ["watery diarrhea", "vomiting", "dehydration", "rice water stool"],
+                    "alert_threshold": 0.35,
+                    "advisory": "Severe watery diarrhea — start ORS immediately. Check for dehydration signs."
+                },
+                "leptospirosis": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.03, "3": 0.03, "4": 0.05,
+                        "5": 0.08, "6": 0.15, "7": 0.25, "8": 0.30,
+                        "9": 0.35, "10": 0.50, "11": 0.55, "12": 0.25
+                    },
+                    "symptoms": ["fever", "muscle pain", "jaundice", "red eyes", "headache"],
+                    "alert_threshold": 0.35,
+                    "advisory": "Fever with muscle pain after exposure to floodwater — suspect leptospirosis."
+                },
+                "chikungunya": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.08, "2": 0.05, "3": 0.05, "4": 0.10,
+                        "5": 0.15, "6": 0.25, "7": 0.35, "8": 0.40,
+                        "9": 0.50, "10": 0.70, "11": 0.65, "12": 0.30
+                    },
+                    "symptoms": ["fever", "severe joint pain", "swelling", "rash"],
+                    "alert_threshold": 0.45,
+                    "advisory": "Fever with severe joint pain/swelling — chikungunya likely during this season."
+                },
+                "acute_gastroenteritis": {
+                    "category": "Gastrointestinal",
+                    "monthly_risk": {
+                        "1": 0.15, "2": 0.15, "3": 0.25, "4": 0.35,
+                        "5": 0.45, "6": 0.50, "7": 0.55, "8": 0.55,
+                        "9": 0.50, "10": 0.50, "11": 0.40, "12": 0.20
+                    },
+                    "symptoms": ["diarrhea", "vomiting", "nausea", "stomach pain", "dehydration"],
+                    "alert_threshold": 0.40,
+                    "advisory": "GI symptoms common this season — assess hydration status. Start ORS."
+                },
+                "respiratory_infections": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.60, "2": 0.50, "3": 0.25, "4": 0.15,
+                        "5": 0.10, "6": 0.15, "7": 0.20, "8": 0.20,
+                        "9": 0.20, "10": 0.25, "11": 0.35, "12": 0.65
+                    },
+                    "symptoms": ["cough", "cold", "sore throat", "congestion", "breathlessness"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Respiratory infections elevated — monitor SpO2 in elderly and children."
+                },
+                "heat_stroke": {
+                    "category": "General",
+                    "monthly_risk": {
+                        "1": 0.02, "2": 0.05, "3": 0.20, "4": 0.55,
+                        "5": 0.75, "6": 0.60, "7": 0.30, "8": 0.25,
+                        "9": 0.20, "10": 0.10, "11": 0.05, "12": 0.02
+                    },
+                    "symptoms": ["high fever", "no sweat", "confusion", "hot skin", "dizziness", "collapse"],
+                    "alert_threshold": 0.45,
+                    "advisory": "Heat-related illness risk high — check for dehydration, cool the patient."
+                },
+                "scrub_typhus": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.05, "4": 0.08,
+                        "5": 0.10, "6": 0.15, "7": 0.25, "8": 0.35,
+                        "9": 0.45, "10": 0.55, "11": 0.50, "12": 0.20
+                    },
+                    "symptoms": ["fever", "eschar", "rash", "headache", "lymph node"],
+                    "alert_threshold": 0.35,
+                    "advisory": "Fever with eschar/rash in rural setting — consider scrub typhus."
+                },
+                "snakebite": {
+                    "category": "Trauma",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.10, "3": 0.15, "4": 0.20,
+                        "5": 0.30, "6": 0.50, "7": 0.60, "8": 0.55,
+                        "9": 0.50, "10": 0.55, "11": 0.40, "12": 0.15
+                    },
+                    "symptoms": ["bite", "swelling", "pain", "bleeding", "fang marks"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Snakebite season active — immobilize limb, do NOT tourniquet. Refer for anti-venom."
+                }
+            }
+        },
+
+        "north_india": {
+            "label": "North India (UP, Bihar, MP, Rajasthan, Delhi NCR)",
+            "climate_zone": "subtropical_humid",
+            "monsoon_type": "southwest_monsoon",
+            "peak_monsoon_months": [7, 8, 9],
+            "diseases": {
+                "dengue": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.05, "4": 0.10,
+                        "5": 0.15, "6": 0.25, "7": 0.45, "8": 0.65,
+                        "9": 0.80, "10": 0.75, "11": 0.40, "12": 0.10
+                    },
+                    "symptoms": ["fever", "body ache", "joint pain", "rash", "headache", "platelet"],
+                    "alert_threshold": 0.50,
+                    "advisory": "Dengue season active — check platelet count for all fever cases."
+                },
+                "malaria": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.08, "4": 0.12,
+                        "5": 0.18, "6": 0.30, "7": 0.55, "8": 0.65,
+                        "9": 0.60, "10": 0.45, "11": 0.20, "12": 0.08
+                    },
+                    "symptoms": ["fever", "chills", "sweat", "rigors", "cyclic fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Malaria risk elevated — rapid diagnostic test for all fever with chills."
+                },
+                "japanese_encephalitis": {
+                    "category": "Neurological",
+                    "monthly_risk": {
+                        "1": 0.02, "2": 0.02, "3": 0.03, "4": 0.05,
+                        "5": 0.10, "6": 0.20, "7": 0.40, "8": 0.55,
+                        "9": 0.50, "10": 0.30, "11": 0.10, "12": 0.03
+                    },
+                    "symptoms": ["high fever", "headache", "confusion", "seizure", "neck stiffness"],
+                    "alert_threshold": 0.30,
+                    "advisory": "JE season — fever with confusion/seizure in children needs URGENT referral."
+                },
+                "respiratory_infections": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.75, "2": 0.65, "3": 0.35, "4": 0.15,
+                        "5": 0.10, "6": 0.10, "7": 0.15, "8": 0.15,
+                        "9": 0.15, "10": 0.30, "11": 0.55, "12": 0.80
+                    },
+                    "symptoms": ["cough", "cold", "sore throat", "congestion", "breathlessness", "pneumonia"],
+                    "alert_threshold": 0.45,
+                    "advisory": "Respiratory infection season — prioritize elderly and infants with cough/breathlessness."
+                },
+                "heat_stroke": {
+                    "category": "General",
+                    "monthly_risk": {
+                        "1": 0.02, "2": 0.05, "3": 0.15, "4": 0.45,
+                        "5": 0.80, "6": 0.85, "7": 0.50, "8": 0.35,
+                        "9": 0.25, "10": 0.10, "11": 0.03, "12": 0.02
+                    },
+                    "symptoms": ["high fever", "no sweat", "confusion", "hot skin", "dizziness", "collapse"],
+                    "alert_threshold": 0.50,
+                    "advisory": "Extreme heat risk — any confusion/high temp without sweating is EMERGENCY."
+                },
+                "acute_gastroenteritis": {
+                    "category": "Gastrointestinal",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.10, "3": 0.20, "4": 0.30,
+                        "5": 0.45, "6": 0.50, "7": 0.60, "8": 0.60,
+                        "9": 0.55, "10": 0.40, "11": 0.20, "12": 0.10
+                    },
+                    "symptoms": ["diarrhea", "vomiting", "nausea", "stomach pain", "dehydration"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Waterborne GI diseases elevated — check water source, start ORS immediately."
+                },
+                "typhoid": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.08, "2": 0.08, "3": 0.12, "4": 0.18,
+                        "5": 0.25, "6": 0.40, "7": 0.55, "8": 0.60,
+                        "9": 0.55, "10": 0.40, "11": 0.20, "12": 0.10
+                    },
+                    "symptoms": ["fever", "headache", "abdominal pain", "fatigue", "week-long fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Typhoid risk high — prolonged fever needs Widal/blood culture."
+                }
+            }
+        },
+
+        "south_india": {
+            "label": "South India (Kerala, Karnataka, Andhra Pradesh, Telangana)",
+            "climate_zone": "tropical_wet",
+            "monsoon_type": "both_monsoons",
+            "peak_monsoon_months": [6, 7, 8, 10, 11],
+            "diseases": {
+                "dengue": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.08, "3": 0.08, "4": 0.12,
+                        "5": 0.18, "6": 0.35, "7": 0.50, "8": 0.55,
+                        "9": 0.60, "10": 0.70, "11": 0.65, "12": 0.30
+                    },
+                    "symptoms": ["fever", "body ache", "joint pain", "rash", "headache", "platelet"],
+                    "alert_threshold": 0.50,
+                    "advisory": "Dengue active — platelet monitoring for fever >2 days."
+                },
+                "malaria": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.08, "2": 0.06, "3": 0.08, "4": 0.12,
+                        "5": 0.18, "6": 0.35, "7": 0.50, "8": 0.55,
+                        "9": 0.50, "10": 0.55, "11": 0.45, "12": 0.20
+                    },
+                    "symptoms": ["fever", "chills", "sweat", "rigors", "cyclic fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Malaria risk present — RDT for fever with chills."
+                },
+                "chikungunya": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.08, "2": 0.05, "3": 0.05, "4": 0.08,
+                        "5": 0.12, "6": 0.25, "7": 0.40, "8": 0.45,
+                        "9": 0.50, "10": 0.60, "11": 0.55, "12": 0.25
+                    },
+                    "symptoms": ["fever", "severe joint pain", "swelling", "rash"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Chikungunya active — fever with joint pain/swelling is key indicator."
+                },
+                "leptospirosis": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.03, "3": 0.03, "4": 0.05,
+                        "5": 0.10, "6": 0.30, "7": 0.50, "8": 0.55,
+                        "9": 0.50, "10": 0.45, "11": 0.40, "12": 0.15
+                    },
+                    "symptoms": ["fever", "muscle pain", "jaundice", "red eyes", "headache"],
+                    "alert_threshold": 0.35,
+                    "advisory": "Post-flood fever with muscle pain/jaundice — suspect leptospirosis."
+                },
+                "respiratory_infections": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.55, "2": 0.45, "3": 0.25, "4": 0.15,
+                        "5": 0.12, "6": 0.18, "7": 0.20, "8": 0.20,
+                        "9": 0.20, "10": 0.25, "11": 0.35, "12": 0.55
+                    },
+                    "symptoms": ["cough", "cold", "sore throat", "congestion", "breathlessness"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Respiratory season — elderly/children with cough need SpO2 check."
+                },
+                "acute_gastroenteritis": {
+                    "category": "Gastrointestinal",
+                    "monthly_risk": {
+                        "1": 0.12, "2": 0.12, "3": 0.20, "4": 0.28,
+                        "5": 0.35, "6": 0.50, "7": 0.55, "8": 0.55,
+                        "9": 0.50, "10": 0.50, "11": 0.40, "12": 0.18
+                    },
+                    "symptoms": ["diarrhea", "vomiting", "nausea", "stomach pain", "dehydration"],
+                    "alert_threshold": 0.40,
+                    "advisory": "GI infections elevated — assess hydration, start ORS."
+                }
+            }
+        },
+
+        "northeast_india": {
+            "label": "Northeast India (Assam, Meghalaya, Manipur, etc.)",
+            "climate_zone": "tropical_wet",
+            "monsoon_type": "heavy_southwest",
+            "peak_monsoon_months": [6, 7, 8, 9],
+            "diseases": {
+                "malaria": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.10, "2": 0.10, "3": 0.15, "4": 0.25,
+                        "5": 0.40, "6": 0.60, "7": 0.75, "8": 0.80,
+                        "9": 0.70, "10": 0.50, "11": 0.25, "12": 0.12
+                    },
+                    "symptoms": ["fever", "chills", "sweat", "rigors", "cyclic fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "High malaria endemic zone — P. falciparum common. RDT mandatory for all fevers."
+                },
+                "dengue": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.08, "4": 0.12,
+                        "5": 0.20, "6": 0.35, "7": 0.50, "8": 0.60,
+                        "9": 0.65, "10": 0.55, "11": 0.25, "12": 0.08
+                    },
+                    "symptoms": ["fever", "body ache", "joint pain", "rash", "headache", "platelet"],
+                    "alert_threshold": 0.45,
+                    "advisory": "Dengue risk elevated — monitor platelets."
+                },
+                "japanese_encephalitis": {
+                    "category": "Neurological",
+                    "monthly_risk": {
+                        "1": 0.03, "2": 0.03, "3": 0.05, "4": 0.08,
+                        "5": 0.15, "6": 0.30, "7": 0.50, "8": 0.60,
+                        "9": 0.55, "10": 0.35, "11": 0.12, "12": 0.05
+                    },
+                    "symptoms": ["high fever", "headache", "confusion", "seizure", "neck stiffness"],
+                    "alert_threshold": 0.30,
+                    "advisory": "JE endemic area — fever + confusion/seizure = EMERGENCY referral."
+                },
+                "respiratory_infections": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.65, "2": 0.55, "3": 0.30, "4": 0.15,
+                        "5": 0.12, "6": 0.15, "7": 0.18, "8": 0.18,
+                        "9": 0.18, "10": 0.25, "11": 0.45, "12": 0.70
+                    },
+                    "symptoms": ["cough", "cold", "sore throat", "congestion", "breathlessness"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Respiratory infections common — watch for pneumonia in children."
+                }
+            }
+        },
+
+        "west_india": {
+            "label": "West India (Maharashtra, Gujarat, Goa)",
+            "climate_zone": "tropical_wet_dry",
+            "monsoon_type": "southwest_monsoon",
+            "peak_monsoon_months": [6, 7, 8, 9],
+            "diseases": {
+                "dengue": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.05, "2": 0.05, "3": 0.08, "4": 0.12,
+                        "5": 0.18, "6": 0.30, "7": 0.50, "8": 0.65,
+                        "9": 0.70, "10": 0.60, "11": 0.30, "12": 0.10
+                    },
+                    "symptoms": ["fever", "body ache", "joint pain", "rash", "headache", "platelet"],
+                    "alert_threshold": 0.50,
+                    "advisory": "Dengue peak season — platelet check for all fever patients."
+                },
+                "malaria": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.08, "2": 0.06, "3": 0.08, "4": 0.12,
+                        "5": 0.18, "6": 0.35, "7": 0.55, "8": 0.60,
+                        "9": 0.55, "10": 0.40, "11": 0.20, "12": 0.10
+                    },
+                    "symptoms": ["fever", "chills", "sweat", "rigors", "cyclic fever"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Malaria risk present — RDT for all fever cases."
+                },
+                "leptospirosis": {
+                    "category": "Infectious",
+                    "monthly_risk": {
+                        "1": 0.03, "2": 0.03, "3": 0.03, "4": 0.05,
+                        "5": 0.08, "6": 0.20, "7": 0.45, "8": 0.55,
+                        "9": 0.50, "10": 0.35, "11": 0.15, "12": 0.05
+                    },
+                    "symptoms": ["fever", "muscle pain", "jaundice", "red eyes", "headache"],
+                    "alert_threshold": 0.35,
+                    "advisory": "Mumbai/coastal areas — post-flood fever suspect leptospirosis."
+                },
+                "respiratory_infections": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.60, "2": 0.50, "3": 0.25, "4": 0.12,
+                        "5": 0.10, "6": 0.12, "7": 0.15, "8": 0.15,
+                        "9": 0.15, "10": 0.25, "11": 0.40, "12": 0.60
+                    },
+                    "symptoms": ["cough", "cold", "sore throat", "congestion", "breathlessness"],
+                    "alert_threshold": 0.40,
+                    "advisory": "Respiratory season — monitor elderly and children."
+                },
+                "h1n1_influenza": {
+                    "category": "Respiratory",
+                    "monthly_risk": {
+                        "1": 0.40, "2": 0.45, "3": 0.35, "4": 0.15,
+                        "5": 0.08, "6": 0.10, "7": 0.15, "8": 0.25,
+                        "9": 0.30, "10": 0.20, "11": 0.15, "12": 0.30
+                    },
+                    "symptoms": ["high fever", "cough", "body ache", "sore throat", "breathlessness"],
+                    "alert_threshold": 0.30,
+                    "advisory": "H1N1 watch — high fever + cough + breathlessness needs testing."
+                }
+            }
+        }
+    },
+
+    "outbreak_detection": {
+        "description": "Rules for detecting potential outbreaks based on patient clustering",
+        "rules": {
+            "cluster_threshold": 5,
+            "time_window_days": 7,
+            "geographic_radius_km": 10,
+            "alert_message": "OUTBREAK ALERT: {count} patients from {area} with similar symptoms ({disease}) in {days} days. Notify District Health Officer."
+        }
+    }
+}

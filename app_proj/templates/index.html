@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F2D4A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Triage AI — Clinical Dashboard</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F3F5F7;
+            --bg2: #FFFFFF;
+            --text: #1A2332;
+            --text2: #4A5D73;
+            --text3: #8696A7;
+            --border: #DEE3EA;
+            --border2: #ECF0F4;
+            --primary: #0F2D4A;
+            --primary2: #1A4A6E;
+            --accent: #388CB4;
+            --accent-bg: #EBF4FA;
+            --card-shadow: 0 1px 3px rgba(15,45,74,0.05), 0 0 0 1px rgba(15,45,74,0.03);
+            --card-r: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            color: #fff; padding: 16px 20px;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+        }
+        .header-inner { max-width: 600px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .header-left h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+        .header-left p { font-size: 11.5px; opacity: 0.6; margin-top: 2px; font-weight: 400; letter-spacing: 0.2px; }
+        .header-link {
+            color: #fff; background: rgba(255,255,255,0.1); padding: 7px 14px;
+            border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.12); transition: all 0.2s;
+            letter-spacing: 0.2px;
+        }
+        .header-link:hover { background: rgba(255,255,255,0.16); }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+        /* Cards */
+        .card {
+            background: var(--bg2); border-radius: var(--card-r); padding: 20px;
+            margin-bottom: 14px; box-shadow: var(--card-shadow);
+        }
+        .card h2 {
+            font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 14px;
+            padding-bottom: 8px; border-bottom: 1px solid var(--border2);
+            text-transform: uppercase; letter-spacing: 0.6px;
+        }
+
+        /* Form */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label {
+            font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 4px;
+            text-transform: uppercase; letter-spacing: 0.6px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 14px; background: var(--bg); transition: all 0.2s;
+            font-family: inherit; color: var(--text);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--accent); background: #fff;
+            box-shadow: 0 0 0 3px rgba(56,140,180,0.08);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        /* NA toggle */
+        .input-with-na { display: flex; gap: 6px; align-items: center; }
+        .input-with-na input[type="number"] { flex: 1; min-width: 0; }
+        .na-toggle {
+            display: flex; align-items: center; gap: 3px; padding: 5px 8px;
+            border: 1px solid var(--border); border-radius: 6px; background: var(--bg);
+            cursor: pointer; font-size: 10px; font-weight: 600; color: var(--text3);
+            white-space: nowrap; user-select: none; transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .na-toggle:has(input:checked) { background: #FDF6E7; border-color: #D4A843; color: #8B6914; }
+        .na-toggle input { display: none; }
+        .form-group.na-active input[type="number"] { opacity: 0.3; pointer-events: none; background: #E8ECF0; }
+        .na-info {
+            display: none; font-size: 10px; color: #8B6914; background: #FDF6E7;
+            padding: 3px 8px; border-radius: 4px; margin-top: 3px;
+        }
+        .form-group.na-active .na-info { display: block; }
+
+        /* Checkboxes */
+        .checkbox-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .checkbox-item {
+            display: flex; align-items: center; gap: 6px; font-size: 12.5px;
+            background: var(--bg); padding: 6px 12px; border-radius: 6px;
+            cursor: pointer; border: 1px solid var(--border2); transition: all 0.15s;
+            font-weight: 500; color: var(--text2);
+        }
+        .checkbox-item:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); color: var(--primary); }
+        .checkbox-item input { width: 14px; height: 14px; accent-color: var(--accent); }
+
+        /* Button */
+        .btn-predict {
+            width: 100%; padding: 13px; background: var(--primary);
+            color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
+            font-family: inherit;
+        }
+        .btn-predict:hover { background: var(--primary2); }
+        .btn-predict:active { transform: scale(0.99); }
+        .btn-predict:disabled { opacity: 0.5; cursor: wait; }
+        .btn-predict.loading { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+
+        /* Quick presets */
+        .quick-fill { display: flex; gap: 6px; flex-wrap: wrap; }
+        .quick-btn {
+            padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px;
+            background: var(--bg2); font-size: 11.5px; cursor: pointer; color: var(--text2);
+            font-weight: 500; transition: all 0.15s; font-family: inherit;
+        }
+        .quick-btn:hover { border-color: var(--accent); color: var(--primary); background: var(--accent-bg); }
+        .quick-btn:active { background: #D8EBF5; }
+
+        /* Results */
+        #results { display: none; }
+        #results.show { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-badge {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 16px; border-radius: 8px; margin-bottom: 10px;
+        }
+        .result-badge .label { font-size: 10px; font-weight: 600; text-transform: uppercase; opacity: 0.85; letter-spacing: 0.6px; }
+        .result-badge .value { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+        .result-badge .confidence { font-size: 11px; opacity: 0.75; }
+        .risk-badge, .urgency-badge { color: #fff; }
+
+        .action-box {
+            background: #FDF6E7; border-left: 3px solid #D4A843; padding: 12px 14px;
+            border-radius: 0 8px 8px 0; margin-bottom: 12px; font-size: 13px;
+            color: #6B4E0A; line-height: 1.5;
+        }
+
+        .disease-box {
+            background: var(--accent-bg); border: 1px solid rgba(56,140,180,0.15);
+            border-radius: 8px; padding: 14px; margin-bottom: 12px;
+        }
+        .disease-box .primary { font-size: 17px; font-weight: 700; color: var(--primary); letter-spacing: -0.3px; }
+        .disease-box .secondary { font-size: 11px; color: var(--text3); margin-top: 4px; letter-spacing: 0.2px; }
+        .disease-item { display: flex; justify-content: space-between; padding: 3px 0; font-size: 12.5px; color: var(--text2); }
+        .disease-bar { height: 5px; background: #D4E6F0; border-radius: 3px; margin-top: 2px; margin-bottom: 4px; }
+        .disease-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s; }
+
+        .red-flag-box {
+            background: #FDF2F2; border: 1px solid #F0CACA; border-radius: 8px;
+            padding: 14px; margin-bottom: 12px;
+        }
+        .red-flag-title { color: #B91C1C; font-weight: 700; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .red-flag-item { font-size: 12.5px; color: #7F1D1D; padding: 3px 0 3px 14px; position: relative; line-height: 1.5; }
+        .red-flag-item::before { content: ''; position: absolute; left: 0; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: #DC2626; }
+
+        .explanation-box { background: var(--accent-bg); border-radius: 8px; padding: 14px; }
+        .explanation-title { font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .explanation-item { font-size: 12.5px; color: var(--text2); padding: 3px 0; line-height: 1.5; }
+
+        .na-warning-box {
+            background: #FDF6E7; border: 1px solid #E8D5A0; border-radius: 8px;
+            padding: 12px; margin-bottom: 12px; font-size: 12.5px; color: #6B4E0A;
+            line-height: 1.5;
+        }
+        .na-warning-box strong { color: #4A3508; }
+
+        .scores-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .score-chip {
+            flex: 1; text-align: center; background: var(--bg); border-radius: 8px; padding: 8px 4px;
+            border: 1px solid var(--border2);
+        }
+        .score-chip .num { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .score-chip .lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+        /* Model Comparison */
+        .section-label { font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.6px; }
+        .model-compare { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+        .model-col {
+            background: var(--bg); border-radius: 8px; padding: 10px; text-align: center;
+            border: 1px solid var(--border2);
+        }
+        .model-col.fusion { border-color: var(--accent); background: var(--accent-bg); }
+        .model-col .model-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.6px; }
+        .model-col.fusion .model-label { color: var(--primary); }
+        .model-col .model-val { font-size: 12px; font-weight: 600; padding: 3px 0; }
+        .model-col .model-conf { font-size: 10px; color: var(--text3); }
+
+        /* Feature Bars */
+        .feature-bar-item { margin-bottom: 8px; }
+        .feature-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+        .feature-bar-name { font-size: 11.5px; font-weight: 600; color: var(--text); }
+        .feature-bar-value { font-size: 10.5px; color: var(--text3); }
+        .feature-bar-track { height: 6px; background: #E8ECF0; border-radius: 3px; overflow: hidden; }
+        .feature-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+        .feature-bar-fill.high { background: #C9432E; }
+        .feature-bar-fill.medium { background: #D4A843; }
+        .feature-bar-fill.low { background: #3D9E6E; }
+
+        /* Confidence Meter */
+        .confidence-meter { margin-bottom: 12px; }
+        .conf-gauge { height: 8px; background: #E8ECF0; border-radius: 4px; overflow: hidden; position: relative; margin: 6px 0; }
+        .conf-gauge-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+        .conf-gauge-labels { display: flex; justify-content: space-between; font-size: 9px; color: var(--text3); letter-spacing: 0.3px; }
+        .conf-warning { font-size: 11.5px; color: #B91C1C; font-weight: 500; margin-top: 4px; padding: 6px 10px; background: #FDF2F2; border-radius: 6px; line-height: 1.5; }
+
+        /* Disagreement */
+        .disagree-box {
+            background: #FEF4EC; border: 1px solid #EAC9A8; border-radius: 8px;
+            padding: 12px; margin-bottom: 12px;
+        }
+        .disagree-box .title { font-size: 12px; font-weight: 700; color: #8B4513; margin-bottom: 4px; }
+        .disagree-box .detail { font-size: 12px; color: #7A4422; line-height: 1.5; }
+
+        /* Escalation */
+        .escalation-box {
+            background: #F6F0FA; border: 1px solid #D9C8E8; border-radius: 8px;
+            padding: 12px; margin-bottom: 12px;
+        }
+        .escalation-box .title { font-size: 12px; font-weight: 700; color: #6B21A8; margin-bottom: 4px; }
+        .escalation-box .detail { font-size: 12px; color: #7C3AED; line-height: 1.5; }
+
+        /* Specific Diseases */
+        .spec-disease {
+            background: var(--bg); border: 1px solid var(--border2); border-radius: 8px;
+            padding: 12px; margin-bottom: 8px;
+        }
+        .spec-disease .sd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .spec-disease .sd-name { font-size: 13px; font-weight: 600; color: var(--primary); }
+        .spec-disease .sd-score { font-size: 10px; font-weight: 600; color: #fff; background: var(--accent); padding: 2px 10px; border-radius: 4px; }
+        .spec-disease .sd-reason { font-size: 11px; color: var(--text3); margin-bottom: 4px; line-height: 1.4; }
+        .spec-disease .sd-tests {
+            font-size: 11.5px; color: var(--primary2); background: var(--accent-bg);
+            padding: 6px 10px; border-radius: 4px; margin-top: 4px; line-height: 1.4;
+        }
+        .spec-disease .sd-tests strong { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); }
+
+        .footer { text-align: center; padding: 20px; font-size: 10.5px; color: var(--text3); line-height: 1.7; letter-spacing: 0.2px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-inner">
+        <div class="header-left">
+            <h1>Triage AI</h1>
+            <p>Multi-Modal Risk Assessment for Rural Clinics</p>
+        </div>
+        <a href="/chatbot" class="header-link">Village Health Assistant</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Quick Demo Presets -->
+    <div class="card">
+        <h2>Quick Demo Presets</h2>
+        <div class="quick-fill">
+            <button class="quick-btn" onclick="fillPreset('healthy')">Healthy Adult</button>
+            <button class="quick-btn" onclick="fillPreset('moderate')">Moderate Fever</button>
+            <button class="quick-btn" onclick="fillPreset('cardiac')">Cardiac Emergency</button>
+            <button class="quick-btn" onclick="fillPreset('respiratory')">Resp. Failure</button>
+            <button class="quick-btn" onclick="fillPreset('pediatric')">Sick Infant</button>
+            <button class="quick-btn" onclick="fillPreset('limited')">Limited Equipment</button>
+        </div>
+    </div>
+
+    <!-- Vitals Input -->
+    <div class="card">
+        <h2>Patient Vitals</h2>
+        <p style="font-size:11.5px; color:var(--text3); margin:-8px 0 12px; line-height:1.5;">Tap <b style="color:var(--text2)">N/A</b> if equipment is not available. The system will use estimated normal values.</p>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Age (years)</label>
+                <input type="number" id="age" value="35" min="0" max="100" step="1">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="gender"><option value="M">Male</option><option value="F">Female</option></select>
+            </div>
+            <div class="form-group" id="grp_heart_rate">
+                <label>Heart Rate (bpm)</label>
+                <div class="input-with-na">
+                    <input type="number" id="heart_rate" value="78" min="30" max="220">
+                    <label class="na-toggle" onclick="toggleNA('heart_rate')"><input type="checkbox" id="na_heart_rate">N/A</label>
+                </div>
+                <div class="na-info">Using estimated normal value (75 bpm)</div>
+            </div>
+            <div class="form-group" id="grp_spo2">
+                <label>SpO2 (%)</label>
+                <div class="input-with-na">
+                    <input type="number" id="spo2" value="97" min="50" max="100">
+                    <label class="na-toggle" onclick="toggleNA('spo2')"><input type="checkbox" id="na_spo2">N/A</label>
+                </div>
+                <div class="na-info">No pulse oximeter &mdash; using estimated normal (97%)</div>
+            </div>
+            <div class="form-group" id="grp_bp_systolic">
+                <label>BP Systolic (mmHg)</label>
+                <div class="input-with-na">
+                    <input type="number" id="bp_systolic" value="120" min="50" max="260">
+                    <label class="na-toggle" onclick="toggleNA('bp_systolic')"><input type="checkbox" id="na_bp_systolic">N/A</label>
+                </div>
+                <div class="na-info">No BP cuff &mdash; using estimated normal (120 mmHg)</div>
+            </div>
+            <div class="form-group" id="grp_bp_diastolic">
+                <label>BP Diastolic (mmHg)</label>
+                <div class="input-with-na">
+                    <input type="number" id="bp_diastolic" value="80" min="30" max="160">
+                    <label class="na-toggle" onclick="toggleNA('bp_diastolic')"><input type="checkbox" id="na_bp_diastolic">N/A</label>
+                </div>
+                <div class="na-info">No BP cuff &mdash; using estimated normal (80 mmHg)</div>
+            </div>
+            <div class="form-group" id="grp_temperature">
+                <label>Temperature (&deg;C)</label>
+                <div class="input-with-na">
+                    <input type="number" id="temperature" value="37.0" min="33" max="43" step="0.1">
+                    <label class="na-toggle" onclick="toggleNA('temperature')"><input type="checkbox" id="na_temperature">N/A</label>
+                </div>
+                <div class="na-info">No thermometer &mdash; using normal estimate (37.0&deg;C)</div>
+            </div>
+            <div class="form-group" id="grp_respiratory_rate">
+                <label>Resp. Rate (/min)</label>
+                <div class="input-with-na">
+                    <input type="number" id="respiratory_rate" value="16" min="4" max="60">
+                    <label class="na-toggle" onclick="toggleNA('respiratory_rate')"><input type="checkbox" id="na_respiratory_rate">N/A</label>
+                </div>
+                <div class="na-info">Not counted &mdash; using estimated normal (16/min)</div>
+            </div>
+            <div class="form-group" id="grp_blood_glucose">
+                <label>Blood Glucose (mg/dL)</label>
+                <div class="input-with-na">
+                    <input type="number" id="blood_glucose" value="100" min="20" max="600">
+                    <label class="na-toggle" onclick="toggleNA('blood_glucose')"><input type="checkbox" id="na_blood_glucose">N/A</label>
+                </div>
+                <div class="na-info">No glucometer &mdash; using estimated normal (100 mg/dL)</div>
+            </div>
+            <div class="form-group" id="grp_pain_score">
+                <label>Pain Score (0&ndash;10)</label>
+                <div class="input-with-na">
+                    <input type="number" id="pain_score" value="3" min="0" max="10">
+                    <label class="na-toggle" onclick="toggleNA('pain_score')"><input type="checkbox" id="na_pain_score">N/A</label>
+                </div>
+                <div class="na-info">Patient unable to report &mdash; using median (3)</div>
+            </div>
+            <div class="form-group">
+                <label>Consciousness (AVPU)</label>
+                <select id="consciousness">
+                    <option value="Alert">Alert</option>
+                    <option value="Voice">Voice</option>
+                    <option value="Pain">Pain</option>
+                    <option value="Unresponsive">Unresponsive</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="weight_kg" value="70" min="2" max="200">
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical History -->
+    <div class="card">
+        <h2>Medical History</h2>
+        <div class="checkbox-row">
+            <label class="checkbox-item"><input type="checkbox" id="has_diabetes"> Diabetes</label>
+            <label class="checkbox-item"><input type="checkbox" id="has_hypertension"> Hypertension</label>
+            <label class="checkbox-item"><input type="checkbox" id="has_heart_disease"> Heart Disease</label>
+            <label class="checkbox-item"><input type="checkbox" id="has_asthma_copd"> Asthma / COPD</label>
+            <label class="checkbox-item"><input type="checkbox" id="is_pregnant"> Pregnant</label>
+        </div>
+    </div>
+
+    <!-- Symptoms -->
+    <div class="card">
+        <h2>Symptom Description</h2>
+        <div class="form-group full">
+            <textarea id="symptoms" placeholder="Describe the patient's symptoms in detail...&#10;Example: Patient reports severe chest pain radiating to left arm for 2 hours. Sweating profusely, feeling nauseous."></textarea>
+        </div>
+    </div>
+
+    <!-- Predict Button -->
+    <button class="btn-predict" id="predictBtn" onclick="runPrediction()">
+        Run Triage Assessment
+    </button>
+
+    <!-- ===== RESULTS SECTION ===== -->
+    <div id="results">
+        <div class="card" style="margin-top:14px;">
+            <h2>Assessment Results</h2>
+
+            <!-- NA Warning -->
+            <div class="na-warning-box" id="naWarningBox" style="display:none;">
+                <strong>Equipment Limitation Notice:</strong>
+                <span id="naWarningText"></span>
+                <br><small>System used estimated normal values for missing readings. Accuracy may be reduced.</small>
+            </div>
+
+            <!-- Risk & Urgency Badges -->
+            <div class="result-badge risk-badge" id="riskBadge">
+                <div>
+                    <div class="label">Risk Level</div>
+                    <div class="value" id="riskValue">-</div>
+                </div>
+                <div class="confidence" id="riskConf">-</div>
+            </div>
+
+            <div class="result-badge urgency-badge" id="urgencyBadge">
+                <div>
+                    <div class="label">Urgency</div>
+                    <div class="value" id="urgencyValue">-</div>
+                </div>
+                <div class="confidence" id="urgencyConf">-</div>
+            </div>
+
+            <!-- Action -->
+            <div class="action-box" id="actionBox">-</div>
+
+            <!-- Scores -->
+            <div class="scores-row">
+                <div class="score-chip"><div class="num" id="newsScore">-</div><div class="lbl">NEWS Score</div></div>
+                <div class="score-chip"><div class="num" id="shockIdx">-</div><div class="lbl">Shock Index</div></div>
+                <div class="score-chip"><div class="num" id="mapVal">-</div><div class="lbl">MAP mmHg</div></div>
+            </div>
+
+            <!-- Disease -->
+            <div class="disease-box">
+                <div class="primary" id="diseaseValue">-</div>
+                <div class="secondary">Suspected condition based on symptoms</div>
+                <div id="diseaseTop3" style="margin-top:10px;"></div>
+            </div>
+
+            <!-- Red Flags -->
+            <div class="red-flag-box" id="redFlagBox" style="display:none;">
+                <div class="red-flag-title" id="redFlagTitle">Red Flags</div>
+                <div id="redFlagList"></div>
+            </div>
+
+            <!-- Model Disagreement Warning -->
+            <div class="disagree-box" id="disagreeBox" style="display:none;">
+                <div class="title">Model Disagreement Detected</div>
+                <div class="detail" id="disagreeDetail"></div>
+            </div>
+
+            <!-- Confidence Escalation Notice -->
+            <div class="escalation-box" id="escalationBox" style="display:none;">
+                <div class="title">Confidence-Based Escalation</div>
+                <div class="detail" id="escalationDetail"></div>
+            </div>
+
+            <!-- Model Comparison -->
+            <div style="margin-bottom:12px;">
+                <div class="section-label">Model Comparison</div>
+                <div class="model-compare" id="modelCompare"></div>
+            </div>
+
+            <!-- Confidence Meter -->
+            <div class="confidence-meter">
+                <div class="section-label" style="margin-bottom:4px;">Prediction Confidence</div>
+                <div class="conf-gauge"><div class="conf-gauge-fill" id="confGaugeFill"></div></div>
+                <div class="conf-gauge-labels"><span>0%</span><span>Low</span><span>Medium</span><span>High</span><span>100%</span></div>
+                <div class="conf-warning" id="confWarning" style="display:none;"></div>
+            </div>
+
+            <!-- Feature Contributions -->
+            <div style="margin-bottom:12px;">
+                <div class="section-label">Top Contributing Factors</div>
+                <div id="featureBars"></div>
+            </div>
+
+            <!-- Specific Diseases -->
+            <div id="specificDiseasesBox" style="display:none;margin-bottom:12px;">
+                <div class="section-label">Possible Specific Conditions</div>
+                <div id="specificDiseasesList"></div>
+            </div>
+
+            <!-- Explanation -->
+            <div class="explanation-box">
+                <div class="explanation-title">Why this prediction?</div>
+                <div id="explanationList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        AI-Enabled Multi-Modal Triage Framework<br>
+        Sarthak Gupta &amp; Dhruv &nbsp;|&nbsp; SRM Institute of Science and Technology<br>
+        Guide: Dr R. Madhura &nbsp;|&nbsp; SDG 3: Good Health and Well-Being
+    </div>
+</div>
+
+<script>
+// ===== DEFAULT VALUES (used when N/A is checked) =====
+const DEFAULTS = {
+    heart_rate: 75,
+    spo2: 97,
+    bp_systolic: 120,
+    bp_diastolic: 80,
+    temperature: 37.0,
+    respiratory_rate: 16,
+    blood_glucose: 100,
+    pain_score: 3
+};
+
+// ===== NA TOGGLE =====
+function toggleNA(field) {
+    const cb = document.getElementById('na_' + field);
+    const grp = document.getElementById('grp_' + field);
+    setTimeout(() => {
+        if (cb.checked) {
+            grp.classList.add('na-active');
+        } else {
+            grp.classList.remove('na-active');
+        }
+    }, 10);
+}
+
+function clearAllNA() {
+    Object.keys(DEFAULTS).forEach(field => {
+        const cb = document.getElementById('na_' + field);
+        const grp = document.getElementById('grp_' + field);
+        if (cb) { cb.checked = false; }
+        if (grp) { grp.classList.remove('na-active'); }
+    });
+}
+
+function getVitalValue(field) {
+    const cb = document.getElementById('na_' + field);
+    if (cb && cb.checked) {
+        return { value: DEFAULTS[field], is_na: true };
+    }
+    return { value: parseFloat(document.getElementById(field).value), is_na: false };
+}
+
+// ===== PRESETS =====
+const presets = {
+    healthy: {
+        age: 30, gender: 'M', heart_rate: 72, spo2: 98, bp_systolic: 118, bp_diastolic: 76,
+        temperature: 36.8, respiratory_rate: 15, blood_glucose: 95, pain_score: 1,
+        consciousness: 'Alert', weight_kg: 70,
+        symptoms: 'Patient presents with mild headache for 2 days. No visual disturbances or nausea. Headache responds to rest and hydration. All limbs moving normally.'
+    },
+    moderate: {
+        age: 45, gender: 'F', heart_rate: 98, spo2: 95, bp_systolic: 132, bp_diastolic: 85,
+        temperature: 38.8, respiratory_rate: 22, blood_glucose: 110, pain_score: 5,
+        consciousness: 'Alert', weight_kg: 65,
+        symptoms: 'Patient presents with persistent high fever for 3 days. Significant body aches and chills. Poor appetite and feeling very tired. Some joint pain reported.'
+    },
+    cardiac: {
+        age: 58, gender: 'M', heart_rate: 135, spo2: 91, bp_systolic: 155, bp_diastolic: 95,
+        temperature: 37.2, respiratory_rate: 24, blood_glucose: 145, pain_score: 9,
+        consciousness: 'Alert', weight_kg: 82,
+        symptoms: 'Patient complains of crushing chest pain radiating to left arm and jaw. Sweating profusely, nauseous. Pain started 1 hour ago. Known hypertension, not taking medication regularly.'
+    },
+    respiratory: {
+        age: 65, gender: 'F', heart_rate: 120, spo2: 82, bp_systolic: 90, bp_diastolic: 55,
+        temperature: 38.5, respiratory_rate: 34, blood_glucose: 130, pain_score: 7,
+        consciousness: 'Voice', weight_kg: 55,
+        symptoms: 'Patient in severe respiratory distress. Cannot complete sentences. Using accessory muscles. Cyanotic lips. History of COPD with recent worsening over 2 days. Productive cough with greenish sputum.'
+    },
+    pediatric: {
+        age: 2, gender: 'M', heart_rate: 155, spo2: 93, bp_systolic: 85, bp_diastolic: 50,
+        temperature: 39.5, respiratory_rate: 42, blood_glucose: 70, pain_score: 8,
+        consciousness: 'Voice', weight_kg: 12,
+        symptoms: 'Infant with high fever for 24 hours. Not feeding well, lethargic. Mother reports decreased urination. Child is irritable and inconsolable. No rash observed.'
+    },
+    limited: {
+        age: 40, gender: 'F', heart_rate: 95, spo2: 97, bp_systolic: 120, bp_diastolic: 80,
+        temperature: 38.5, respiratory_rate: 20, blood_glucose: 100, pain_score: 6,
+        consciousness: 'Alert', weight_kg: 60,
+        symptoms: 'Patient has fever and abdominal pain for 2 days. Some vomiting. Tenderness in right lower abdomen.',
+        na_fields: ['spo2', 'blood_glucose']
+    }
+};
+
+function fillPreset(name) {
+    const p = presets[name];
+    clearAllNA();
+    ['age','heart_rate','spo2','bp_systolic','bp_diastolic','temperature','respiratory_rate','blood_glucose','pain_score','weight_kg'].forEach(f => {
+        const el = document.getElementById(f);
+        if (el) el.value = p[f];
+    });
+    document.getElementById('gender').value = p.gender;
+    document.getElementById('consciousness').value = p.consciousness;
+    document.getElementById('symptoms').value = p.symptoms;
+    ['has_diabetes','has_hypertension','has_heart_disease','has_asthma_copd','is_pregnant'].forEach(f => {
+        document.getElementById(f).checked = false;
+    });
+    if (p.na_fields) {
+        p.na_fields.forEach(f => {
+            const cb = document.getElementById('na_' + f);
+            if (cb) { cb.checked = true; toggleNA(f); }
+        });
+    }
+}
+
+// ===== PREDICTION =====
+async function runPrediction() {
+    const btn = document.getElementById('predictBtn');
+    btn.disabled = true; btn.classList.add('loading'); btn.textContent = 'Analyzing...';
+
+    const hr = getVitalValue('heart_rate');
+    const sp = getVitalValue('spo2');
+    const sbp = getVitalValue('bp_systolic');
+    const dbp = getVitalValue('bp_diastolic');
+    const temp = getVitalValue('temperature');
+    const rr = getVitalValue('respiratory_rate');
+    const bg = getVitalValue('blood_glucose');
+    const ps = getVitalValue('pain_score');
+
+    const na_fields = [];
+    if (hr.is_na) na_fields.push('heart_rate');
+    if (sp.is_na) na_fields.push('spo2');
+    if (sbp.is_na) na_fields.push('bp_systolic');
+    if (dbp.is_na) na_fields.push('bp_diastolic');
+    if (temp.is_na) na_fields.push('temperature');
+    if (rr.is_na) na_fields.push('respiratory_rate');
+    if (bg.is_na) na_fields.push('blood_glucose');
+    if (ps.is_na) na_fields.push('pain_score');
+
+    const data = {
+        age: parseInt(document.getElementById('age').value),
+        gender: document.getElementById('gender').value,
+        heart_rate: hr.value,
+        spo2: sp.value,
+        bp_systolic: sbp.value,
+        bp_diastolic: dbp.value,
+        temperature: temp.value,
+        respiratory_rate: rr.value,
+        blood_glucose: bg.value,
+        pain_score: ps.value,
+        consciousness: document.getElementById('consciousness').value,
+        weight_kg: parseFloat(document.getElementById('weight_kg').value),
+        symptoms: document.getElementById('symptoms').value,
+        has_diabetes: document.getElementById('has_diabetes').checked ? 1 : 0,
+        has_hypertension: document.getElementById('has_hypertension').checked ? 1 : 0,
+        has_heart_disease: document.getElementById('has_heart_disease').checked ? 1 : 0,
+        has_asthma_copd: document.getElementById('has_asthma_copd').checked ? 1 : 0,
+        is_pregnant: document.getElementById('is_pregnant').checked ? 1 : 0,
+    };
+
+    try {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const r = await res.json();
+        btn.disabled = false; btn.classList.remove('loading'); btn.textContent = 'Run Triage Assessment';
+        showResults(r, na_fields);
+    } catch (e) {
+        btn.disabled = false; btn.classList.remove('loading'); btn.textContent = 'Run Triage Assessment';
+        alert('Could not connect to the prediction server. Make sure Flask is running on port 5001.');
+    }
+}
+
+function showResults(r, na_fields) {
+    const fieldNames = {
+        heart_rate: 'Heart Rate', spo2: 'SpO2', bp_systolic: 'BP Systolic',
+        bp_diastolic: 'BP Diastolic', temperature: 'Temperature',
+        respiratory_rate: 'Resp. Rate', blood_glucose: 'Blood Glucose', pain_score: 'Pain Score'
+    };
+
+    // NA Warning
+    const naBox = document.getElementById('naWarningBox');
+    if (na_fields.length > 0) {
+        naBox.style.display = 'block';
+        const missing = na_fields.map(f => fieldNames[f] || f).join(', ');
+        document.getElementById('naWarningText').textContent = ` ${missing} not available. `;
+    } else {
+        naBox.style.display = 'none';
+    }
+
+    // Risk
+    document.getElementById('riskValue').textContent = r.risk_level;
+    document.getElementById('riskBadge').style.background = r.risk_color;
+    document.getElementById('riskConf').textContent = r.risk_confidence.toFixed(1) + '% confidence';
+
+    // Urgency
+    document.getElementById('urgencyValue').textContent = r.urgency;
+    document.getElementById('urgencyBadge').style.background = r.urgency_color;
+    document.getElementById('urgencyConf').textContent = r.urgency_confidence.toFixed(1) + '% confidence';
+
+    // Action
+    document.getElementById('actionBox').innerHTML = '<strong>Recommended Action:</strong> ' + r.urgency_action;
+
+    // Scores
+    document.getElementById('newsScore').textContent = r.news_score;
+    document.getElementById('shockIdx').textContent = r.shock_index.toFixed(2);
+    document.getElementById('mapVal').textContent = r.map_mmhg.toFixed(0);
+
+    // Disease
+    document.getElementById('diseaseValue').textContent = r.disease;
+    let diseaseHTML = '';
+    r.disease_top3.forEach(d => {
+        diseaseHTML += `<div class="disease-item"><span>${d.name}</span><span>${d.prob.toFixed(1)}%</span></div>`;
+        diseaseHTML += `<div class="disease-bar"><div class="disease-bar-fill" style="width:${d.prob}%"></div></div>`;
+    });
+    document.getElementById('diseaseTop3').innerHTML = diseaseHTML;
+
+    // Red Flags
+    const rfBox = document.getElementById('redFlagBox');
+    if (r.red_flags.length > 0) {
+        rfBox.style.display = 'block';
+        document.getElementById('redFlagTitle').textContent = `Red Flags (${r.red_flag_count} triggered)`;
+        let rfHTML = '';
+        r.red_flags.forEach(f => { rfHTML += `<div class="red-flag-item">${f.message}</div>`; });
+        document.getElementById('redFlagList').innerHTML = rfHTML;
+    } else {
+        rfBox.style.display = 'none';
+    }
+
+    // Model Disagreement
+    const disagreeBox = document.getElementById('disagreeBox');
+    if (r.model_disagreement) {
+        disagreeBox.style.display = 'block';
+        document.getElementById('disagreeDetail').textContent = r.disagreement_detail + ' — system automatically escalated to the safer (higher risk) assessment.';
+    } else {
+        disagreeBox.style.display = 'none';
+    }
+
+    // Confidence Escalation
+    const escBox = document.getElementById('escalationBox');
+    if (r.confidence_escalated) {
+        escBox.style.display = 'block';
+        let escText = `Low prediction confidence detected. Risk was escalated from ${r.original_risk} to ${r.risk_level} as a safety precaution.`;
+        if (r.original_urgency) escText += ` Urgency was escalated from ${r.original_urgency} to ${r.urgency}.`;
+        document.getElementById('escalationDetail').textContent = escText;
+    } else {
+        escBox.style.display = 'none';
+    }
+
+    // Model Comparison
+    if (r.model_comparison) {
+        const mc = r.model_comparison;
+        const riskColors = {Low:'#3D9E6E',Moderate:'#D4A843',High:'#C67A30',Critical:'#B91C1C'};
+        document.getElementById('modelCompare').innerHTML = `
+            <div class="model-col">
+                <div class="model-label">Vitals Model</div>
+                <div class="model-val" style="color:${riskColors[mc.vitals_risk]||'#888'}">Risk: ${mc.vitals_risk}</div>
+                <div class="model-conf">${mc.vitals_risk_conf.toFixed(0)}% conf</div>
+                <div class="model-val" style="font-size:11px;margin-top:4px;">${mc.vitals_urgency}</div>
+                <div class="model-conf">${mc.vitals_urgency_conf.toFixed(0)}% conf</div>
+                <div style="font-size:10px;color:var(--text3);margin-top:4px">Weight: ${(mc.fusion_weights.risk_vitals*100).toFixed(0)}%</div>
+            </div>
+            <div class="model-col">
+                <div class="model-label">NLP Model</div>
+                <div class="model-val" style="color:${riskColors[mc.nlp_risk]||'#888'}">Risk: ${mc.nlp_risk}</div>
+                <div class="model-conf">${mc.nlp_risk_conf.toFixed(0)}% conf</div>
+                <div class="model-val" style="font-size:11px;margin-top:4px;">${mc.nlp_urgency}</div>
+                <div class="model-conf">${mc.nlp_urgency_conf.toFixed(0)}% conf</div>
+                <div style="font-size:10px;color:var(--text3);margin-top:4px">Weight: ${(mc.fusion_weights.risk_nlp*100).toFixed(0)}%</div>
+            </div>
+            <div class="model-col fusion">
+                <div class="model-label">Fused Result</div>
+                <div class="model-val" style="color:${r.risk_color}">Risk: ${r.risk_level}</div>
+                <div class="model-conf">${r.risk_confidence.toFixed(0)}% conf</div>
+                <div class="model-val" style="font-size:11px;margin-top:4px;color:${r.urgency_color}">${r.urgency}</div>
+                <div class="model-conf">${r.urgency_confidence.toFixed(0)}% conf</div>
+                <div style="font-size:10px;color:var(--primary);margin-top:4px;font-weight:600">Final Decision</div>
+            </div>`;
+    }
+
+    // Confidence Meter
+    const avgConf = (r.risk_confidence + r.urgency_confidence) / 2;
+    const confColor = avgConf >= 75 ? '#3D9E6E' : avgConf >= 55 ? '#D4A843' : '#B91C1C';
+    document.getElementById('confGaugeFill').style.width = avgConf + '%';
+    document.getElementById('confGaugeFill').style.background = confColor;
+    const confWarn = document.getElementById('confWarning');
+    if (avgConf < 55) {
+        confWarn.style.display = 'block';
+        confWarn.textContent = `Low confidence (${avgConf.toFixed(0)}%) — prediction may be uncertain. Professional evaluation strongly recommended.`;
+    } else if (avgConf < 75) {
+        confWarn.style.display = 'block';
+        confWarn.style.color = '#6B4E0A';
+        confWarn.style.background = '#FDF6E7';
+        confWarn.textContent = `Moderate confidence (${avgConf.toFixed(0)}%) — consider professional verification.`;
+    } else {
+        confWarn.style.display = 'none';
+    }
+
+    // Feature Contributions
+    if (r.feature_contributions) {
+        let fbHTML = '';
+        r.feature_contributions.forEach(f => {
+            fbHTML += `<div class="feature-bar-item">
+                <div class="feature-bar-header">
+                    <span class="feature-bar-name">${f.feature}</span>
+                    <span class="feature-bar-value">${f.value} (${f.impact}% impact)</span>
+                </div>
+                <div class="feature-bar-track">
+                    <div class="feature-bar-fill ${f.direction}" style="width:${f.impact}%"></div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('featureBars').innerHTML = fbHTML;
+    }
+
+    // Specific Diseases
+    const sdBox = document.getElementById('specificDiseasesBox');
+    if (r.specific_diseases && r.specific_diseases.length > 0) {
+        sdBox.style.display = 'block';
+        let sdHTML = '';
+        r.specific_diseases.forEach((sd, i) => {
+            sdHTML += `<div class="spec-disease">
+                <div class="sd-header">
+                    <span class="sd-name">${i+1}. ${sd.name}</span>
+                    <span class="sd-score">${sd.match_score}% match</span>
+                </div>
+                <div class="sd-reason">${sd.reason}</div>
+                <div class="sd-tests"><strong>Recommended Tests: </strong>${sd.recommended_tests}</div>
+            </div>`;
+        });
+        document.getElementById('specificDiseasesList').innerHTML = sdHTML;
+    } else {
+        sdBox.style.display = 'none';
+    }
+
+    // Explanation
+    let expHTML = '';
+    if (na_fields.length > 0) {
+        expHTML += `<div class="explanation-item" style="color:#6B4E0A;">${na_fields.length} vital(s) not available - using estimated normal values</div>`;
+    }
+    r.explanation.forEach(e => { expHTML += `<div class="explanation-item">${e}</div>`; });
+    document.getElementById('explanationList').innerHTML = expHTML;
+
+    // Show results
+    const results = document.getElementById('results');
+    results.classList.add('show');
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered'));
+}
+</script>
+</body>
+</html>

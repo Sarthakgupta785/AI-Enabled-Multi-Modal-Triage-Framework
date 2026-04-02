@@ -1,0 +1,341 @@
+{
+  "risk_level": {
+    "vitals_accuracy": 1.0,
+    "nlp_accuracy": 0.731,
+    "fusion_accuracy": 1.0,
+    "vitals_f1": 1.0,
+    "nlp_f1": 0.744926921655325,
+    "fusion_f1": 1.0,
+    "weights": {
+      "vitals_weight": 0.5,
+      "nlp_weight": 0.5,
+      "val_f1": 1.0
+    },
+    "confusion_matrix": [
+      [
+        455,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        147,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        170,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        228
+      ]
+    ],
+    "classification_report": {
+      "Low": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 455.0
+      },
+      "Moderate": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 147.0
+      },
+      "High": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 170.0
+      },
+      "Critical": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 228.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      }
+    }
+  },
+  "urgency": {
+    "vitals_accuracy": 0.966,
+    "nlp_accuracy": 0.631,
+    "fusion_accuracy": 0.967,
+    "vitals_f1": 0.9663855780996412,
+    "nlp_f1": 0.6426667222195794,
+    "fusion_f1": 0.9673865981955204,
+    "weights": {
+      "vitals_weight": 0.45,
+      "nlp_weight": 0.55,
+      "val_f1": 0.9773
+    },
+    "confusion_matrix": [
+      [
+        387,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        196,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        152,
+        3
+      ],
+      [
+        0,
+        0,
+        29,
+        232
+      ]
+    ],
+    "classification_report": {
+      "Non-Urgent": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 387.0
+      },
+      "Semi-Urgent": {
+        "precision": 0.9949238578680203,
+        "recall": 1.0,
+        "f1-score": 0.9974554707379135,
+        "support": 196.0
+      },
+      "Urgent": {
+        "precision": 0.8397790055248618,
+        "recall": 0.9743589743589743,
+        "f1-score": 0.9020771513353115,
+        "support": 156.0
+      },
+      "Emergency": {
+        "precision": 0.9872340425531915,
+        "recall": 0.8888888888888888,
+        "f1-score": 0.9354838709677419,
+        "support": 261.0
+      },
+      "accuracy": 0.967,
+      "macro avg": {
+        "precision": 0.9554842264865184,
+        "recall": 0.9658119658119658,
+        "f1-score": 0.9587541232602418,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 0.9706786861103935,
+        "recall": 0.967,
+        "f1-score": 0.9673865981955204,
+        "support": 1000.0
+      }
+    }
+  },
+  "disease_category": {
+    "vitals_accuracy": 0.568,
+    "nlp_accuracy": 1.0,
+    "fusion_accuracy": 1.0,
+    "vitals_f1": 0.5732113518734131,
+    "nlp_f1": 1.0,
+    "fusion_f1": 1.0,
+    "weights": {
+      "vitals_weight": 0.0,
+      "nlp_weight": 1.0,
+      "val_f1": 1.0
+    },
+    "confusion_matrix": [
+      [
+        127,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        120,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        109,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        150,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        67,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        108,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        22,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        212,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        85
+      ]
+    ],
+    "classification_report": {
+      "Cardiac": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 127.0
+      },
+      "Gastrointestinal": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 120.0
+      },
+      "General": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 109.0
+      },
+      "Infectious": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 150.0
+      },
+      "Metabolic": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 67.0
+      },
+      "Neurological": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 108.0
+      },
+      "Obstetric": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 22.0
+      },
+      "Respiratory": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 212.0
+      },
+      "Trauma": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 85.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1000.0
+      }
+    }
+  }
+}

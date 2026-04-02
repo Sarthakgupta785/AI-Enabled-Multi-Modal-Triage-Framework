@@ -1,0 +1,11 @@
+{
+  "max_features": 5000,
+  "ngram_range": [
+    1,
+    2
+  ],
+  "min_df": 3,
+  "max_df": 0.95,
+  "vocabulary_size": 3399,
+  "num_bigrams": 2735
+}
