@@ -2,7 +2,7 @@
 app.py — Triage PWA Backend (Flask)
 ====================================
 Authors: Sarthak Gupta, Dhruv
-Guide: Dr R. Madhura
+Guide: Dr. R. Aishwarya
 
 Run: python app/app.py
 Then open http://localhost:5000 on your phone (same WiFi)
@@ -819,4 +819,5 @@ if __name__ == '__main__':
     print(f"  On Android Chrome: Menu → 'Add to Home Screen'")
     print(f"{'='*55}\n")
 
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=False)
