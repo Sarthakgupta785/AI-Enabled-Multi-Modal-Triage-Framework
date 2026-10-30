@@ -20,15 +20,26 @@ import numpy as np
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
 # === NEW: Seasonal Context Module ===
-from seasonal_context import (
-    get_seasonal_disease_risks,
-    get_category_seasonal_boost,
-    check_seasonal_red_flags,
-    get_urgency_seasonal_adjustment,
-    get_seasonal_alerts,
-    get_seasonal_explanation,
-    get_available_regions
-)
+try:
+    from seasonal_context import (
+        get_seasonal_disease_risks,
+        get_category_seasonal_boost,
+        check_seasonal_red_flags,
+        get_urgency_seasonal_adjustment,
+        get_seasonal_alerts,
+        get_seasonal_explanation,
+        get_available_regions
+    )
+except ImportError:
+    from app_proj.seasonal_context import (
+        get_seasonal_disease_risks,
+        get_category_seasonal_boost,
+        check_seasonal_red_flags,
+        get_urgency_seasonal_adjustment,
+        get_seasonal_alerts,
+        get_seasonal_explanation,
+        get_available_regions
+    )
 
 # =====================================================================
 # SETUP
